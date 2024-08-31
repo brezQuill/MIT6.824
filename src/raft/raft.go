@@ -73,6 +73,7 @@ type Raft struct {
 	persister *Persister          // Object to hold this peer's persisted state
 	me        int                 // this peer's index into peers[] -- 可以用做candidateId吗？
 	dead      int32               // set by Kill()
+	Stop      int32               //set by me
 
 	// Your data here (2A, 2B, 2C).
 	// Look at the paper's Figure 2 for a description of what
@@ -241,9 +242,9 @@ func (rf *Raft) startElection() {
 func (rf *Raft) heartbeats(id int, term int) {
 	args := AppendEntriesArgs{Term: term, LeaderId: id}
 
-	for !rf.killed() {
+	for !rf.killed() && !rf.stop() {
 		rf.mu.RLock()
-		DPrintf("%d : 发送心跳!!!", rf.me)
+		// DPrintf("%d : 发送心跳!!!", rf.me)
 		if rf.role != LEADER {
 			rf.mu.RUnlock()
 			break
@@ -445,26 +446,31 @@ func (rf *Raft) sendAppendEntries(Term int) {
 			continue
 		}
 		go func(x int) {
-			start := time.Now()
 			rf.mu.RLock()
-			DPrintf("%d : 发送RPC前, 竞争锁花费: %d", rf.me, time.Since(start).Milliseconds())
 			prevLogIndex := rf.nextIndex[x] - 1
 			args := AppendEntriesArgs{Term, rf.me, prevLogIndex, rf.log[prevLogIndex].Term, rf.log[rf.nextIndex[x]:], rf.commitIndex}
-			DPrintf("%d   send    to %d: len(args.Entries) = %d, nextIndex = %v", rf.me, x, len(args.Entries), rf.nextIndex)
+			// DPrintf("%d   send    to %d, Term = %d: len(args.Entries) = %d, nextIndex = %v", rf.me, x, Term, len(args.Entries), rf.nextIndex)
 			rf.mu.RUnlock()
 
 			for !rf.killed() {
 				reply := AppendEntriesReply{}
+				// rf.mu.RLock()
+				// DPrintf("%d   send    to %d, Term = %d: len(args.Entries) = %d, nextIndex = %v", rf.me, x, Term, len(args.Entries), rf.nextIndex)
+				// rf.mu.RUnlock()
 				success := rf.peers[x].Call("Raft.AppendEntries", &args, &reply)
+				// rf.mu.RLock()
+				// DPrintf("%d receive from %d, Term = %d: len(args.Entries) = %d, nextIndex = %v", rf.me, x, Term, len(args.Entries), rf.nextIndex)
+				// rf.mu.RUnlock()
 				// DPrintf("%d sent to %d, command = %d :args.PrevLogIndex = %d, Term = %d", rf.me, x, args.Entries[len(args.Entries)-1].Command, args.PrevLogIndex, args.Term)
 				if !success {
 					// 网络失败
 					rf.mu.RLock()
-					DPrintf("%d receive from %d: 网络失败", rf.me, x)
+					// DPrintf("%d   send    to %d, Term = %d: len(args.Entries) = %d, nextIndex = %v, 网络失败!!", rf.me, x, Term, len(args.Entries), rf.nextIndex)
 					if rf.role != LEADER || rf.currentTerm != args.Term {
 						rf.mu.RUnlock()
 						return
 					}
+					// DPrintf("%d   send    to %d, Term = %d: len(args.Entries) = %d, nextIndex = %v, 网络失败,决定重发!!", rf.me, x, Term, len(args.Entries), rf.nextIndex)
 					rf.mu.RUnlock()
 					// return
 				} else {
@@ -472,6 +478,7 @@ func (rf *Raft) sendAppendEntries(Term int) {
 					rf.mu.Lock()
 
 					if reply.Term > rf.currentTerm {
+						// DPrintf("%d receive from %d, Term = %d: 回复中任期更新，丢弃并转换角色", rf.me, x, Term)
 						rf.ChangeToFollower(reply.Term)
 						rf.ElectionTimerReset()
 						rf.mu.Unlock()
@@ -480,24 +487,30 @@ func (rf *Raft) sendAppendEntries(Term int) {
 					// 当并发传送RPC时，其中某些reply可能已经改变了leader的nextIndex  ...
 					// 需要检查收到回复时，自己还是否是leader; 或者任期发生了改变
 					if rf.role != LEADER || rf.currentTerm != args.Term {
+						// DPrintf("%d receive from %d, Term = %d: 任期或角色变化，丢弃", rf.me, x, Term)
 						rf.mu.Unlock()
 						return
 					}
 
 					if reply.Success {
 						if rf.nextIndex[x] > args.PrevLogIndex+1+len(args.Entries) || rf.matchIndex[x] > args.PrevLogIndex+len(args.Entries) {
+							// DPrintf("%d receive from %d, Term = %d: len(args.Entries) = %d, nextIndex = %v, 但是nextIndex和matchIndex都更新过了", rf.me, x, Term, len(args.Entries), rf.nextIndex)
+							// 这里没有解锁....这个bug花了5个小时
+							rf.mu.Unlock()
 							return
 						}
 						rf.nextIndex[x] = args.PrevLogIndex + 1 + len(args.Entries) // 这里需要+1
 						rf.matchIndex[x] = args.PrevLogIndex + len(args.Entries)
-						DPrintf("%d receive from %d: len(args.Entries) = %d, nextIndex = %v", rf.me, x, len(args.Entries), rf.nextIndex)
+						// DPrintf("%d receive from %d, Term = %d: len(args.Entries) = %d, nextIndex = %v", rf.me, x, Term, len(args.Entries), rf.nextIndex)
 
 						numMatched++
 
 						// preCommit := rf.commitIndex // for debug
 						if numMatched > len(rf.peers)/2 && rf.commitIndex < rf.matchIndex[x] {
 							rf.commitIndex = rf.matchIndex[x]
+							// DPrintf("%d : 唤醒", rf.me)
 							rf.cv.Signal() // 唤醒，提交commit
+							// DPrintf("%d : 结束唤醒", rf.me)
 							// DPrintf("%d : commitIndex changed. pre: %d, now: %d, lastApply: %d", rf.me, preCommit, rf.commitIndex, rf.lastApplied)
 						}
 
@@ -508,7 +521,9 @@ func (rf *Raft) sendAppendEntries(Term int) {
 						for prevLogIndex > 0 && (rf.log[prevLogIndex].Term != reply.ConflictTerm && prevLogIndex >= reply.ConflictIndex) {
 							prevLogIndex--
 						}
+						// DPrintf("%d receive from %d, Term = %d: prevLogIndex = %d 处存在entry, 但是Term不对", rf.me, x, Term, args.PrevLogIndex)
 					} else {
+						// DPrintf("%d receive from %d, Term = %d: prevLogIndex = %d 处不存在entry", rf.me, x, Term, args.PrevLogIndex)
 						// prevLogIndex处不存在entry
 						// 当远端遇见一个往期RPC，会直接回复我们，此时reply.ConflictTerm == 0，reply.ConflictIndex = 0
 						// 假如我们不丢弃往期RPC回复会执行以下代码，造成prevLogIndex = -1的超限错误。这个BUG花了老子4个小时
@@ -570,7 +585,7 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 // The ticker go routine starts a new election if this peer hasn't received
 // heartsbeats recently.
 func (rf *Raft) ticker() {
-	for !rf.killed() {
+	for !rf.killed() && !rf.stop() {
 		// 不是leader尝试发起选举
 		<-rf.electionTimer.C
 		if !rf.electionTimer.Stop() {
@@ -582,6 +597,7 @@ func (rf *Raft) ticker() {
 		rf.electionTimer.Reset(randomizedElectionTimeout())
 		rf.startElection()
 	}
+
 }
 
 func (rf *Raft) ChangeToFollower(Term int) {
@@ -638,16 +654,19 @@ func (rf *Raft) HeartBeatTimerReset() {
 }
 
 func (rf *Raft) ApplyToUser() {
-	for !rf.killed() {
+	for !rf.killed() && !rf.stop() {
+		DPrintf("%d : before apply Lock", rf.me)
 		rf.mu.Lock()
-
+		DPrintf("%d : after apply Lock", rf.me)
 		for !(rf.lastApplied < rf.commitIndex) {
 			rf.cv.Wait()
 		}
+		// DPrintf("%d : before apply", rf.me)
 		for i := rf.lastApplied; i <= rf.commitIndex; i++ {
 			rf.applyCh <- ApplyMsg{CommandValid: true, Command: rf.log[i].Command, CommandIndex: i}
 			rf.lastApplied = i
 		}
+		// DPrintf("%d : after apply", rf.me)
 		// DPrintf("%d : lastApplied = %d", rf.me, rf.lastApplied)
 		rf.mu.Unlock()
 	}
@@ -720,8 +739,18 @@ func (rf *Raft) killed() bool {
 	return z == 1
 }
 
+func (rf *Raft) set_stop() {
+	time.Sleep(time.Second * 50)
+	atomic.StoreInt32(&rf.Stop, 1)
+}
+
+func (rf *Raft) stop() bool {
+	z := atomic.LoadInt32(&rf.Stop)
+	return z == 1
+}
+
 func randomizedElectionTimeout() time.Duration {
-	return time.Duration(time.Duration(150+rand.Intn(200)) * time.Millisecond)
+	return time.Duration(time.Duration(200+rand.Intn(200)) * time.Millisecond)
 }
 
 func heartBeatTimeout() time.Duration {
