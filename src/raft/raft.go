@@ -331,12 +331,12 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 		reply.Success = false
 		return
 	}
-	if args.Term >= rf.currentTerm {
+	if args.Term > rf.currentTerm {
 		rf.ChangeToFollower(args.Term)
 		rf.ElectionTimerReset()
 	}
 	reply.Term = rf.currentTerm
-	// rf.role = FOLLOWER
+	rf.role = FOLLOWER
 
 	if len(rf.log) > args.PrevLogIndex {
 		// args.PrevLogIndex处存在entry
@@ -460,6 +460,7 @@ func (rf *Raft) sendAppendEntries(Term int) {
 				if !success {
 					// 网络失败
 					rf.mu.RLock()
+					DPrintf("%d receive from %d: 网络失败", rf.me, x)
 					if rf.role != LEADER || rf.currentTerm != args.Term {
 						rf.mu.RUnlock()
 						return
