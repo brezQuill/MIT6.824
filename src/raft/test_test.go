@@ -386,18 +386,16 @@ func TestRejoin2B(t *testing.T) {
 
 	// new leader network failure
 	leader2 := cfg.checkOneLeader()
+	DPrintf("old leader: %d, new leader: %d", leader1, leader2)
 	cfg.disconnect(leader2)
 
 	// old leader connected again
 	cfg.connect(leader1)
-
-	cfg.one(104, 2, true)
-
+	cfg.one(104, 2, true) // 这个命令发送出去就导致old leader想要提交旧的东西
 	// all together now
 	cfg.connect(leader2)
 
 	cfg.one(105, servers, true)
-
 	cfg.end()
 }
 

@@ -255,23 +255,22 @@ func (rf *Raft) heartbeats(id int, term int) {
 		args.PrevLogTerm = rf.log[rf.commitIndex].Term
 		//
 		rf.mu.RUnlock()
-		rf.sendAppendEntries(term)
-		// for server, _ := range rf.peers {
-		// 	if server == rf.me {
-		// 		continue
-		// 	}
-		// 	go func(x int, myInfo AppendEntriesArgs) {
-		// 		reply := AppendEntriesReply{}
-		// 		rf.peers[x].Call("Raft.AppendEntries", &myInfo, &reply)
-		// 		rf.mu.Lock()
-		// 		defer rf.mu.Unlock()
+		for server, _ := range rf.peers {
+			if server == rf.me {
+				continue
+			}
+			go func(x int, myInfo AppendEntriesArgs) {
+				reply := AppendEntriesReply{}
+				rf.peers[x].Call("Raft.AppendEntries", &myInfo, &reply)
+				rf.mu.Lock()
+				defer rf.mu.Unlock()
 
-		// 		if reply.Term > rf.currentTerm {
-		// 			rf.ChangeToFollower(reply.Term)
-		// 			rf.ElectionTimerReset()
-		// 		}
-		// 	}(server, args)
-		// }
+				if reply.Term > rf.currentTerm {
+					rf.ChangeToFollower(reply.Term)
+					rf.ElectionTimerReset()
+				}
+			}(server, args)
+		}
 		<-rf.heartBeatTimer.C
 		rf.HeartBeatTimerReset()
 	}
@@ -356,7 +355,7 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 				for i < len(args.Entries) && rf.log[args.PrevLogIndex+1+i].Term == args.Entries[i].Term {
 					i++
 				}
-				if i != len(args.Entries)-1 {
+				if i != len(args.Entries) { // 原先写的是i != len(args.Entries)-1
 					// 发现了冲突，截断！
 					rf.log = rf.log[0 : args.PrevLogIndex+1+i]
 					rf.log = append(rf.log, args.Entries[i:]...)
@@ -437,6 +436,7 @@ func min(a int, b int) int {
 				 	1）preLogTerm冲突 ： 找到合适的nextIndex
 					2) preLogIndex不存在 ：置nextIndex = conflictIndex
 */
+// 重构一下：负责将传入的Entries广播出去？
 func (rf *Raft) sendAppendEntries(Term int) {
 	rf.mu.RLock()
 	defer rf.mu.RUnlock()
@@ -473,6 +473,7 @@ func (rf *Raft) sendAppendEntries(Term int) {
 					}
 					// DPrintf("%d   send    to %d, Term = %d: len(args.Entries) = %d, nextIndex = %v, 网络失败,决定重发!!", rf.me, x, Term, len(args.Entries), rf.nextIndex)
 					rf.mu.RUnlock()
+					time.Sleep(10 * time.Millisecond)
 					// return
 				} else {
 					// 网络成功
@@ -567,6 +568,7 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 	index := -1
 	term := rf.currentTerm
 	isLeader := rf.role == LEADER
+	DPrintf("%d : currentTerm = %d, command = %v, nextIndex = %v", rf.me, term, command, rf.nextIndex)
 	rf.mu.RUnlock()
 
 	if isLeader {
@@ -656,13 +658,13 @@ func (rf *Raft) HeartBeatTimerReset() {
 
 func (rf *Raft) ApplyToUser() {
 	for !rf.killed() && !rf.stop() {
-		DPrintf("%d : before apply Lock", rf.me)
+		// DPrintf("%d : before apply Lock", rf.me)
 		rf.mu.Lock()
-		DPrintf("%d : after apply Lock", rf.me)
+		// DPrintf("%d : after apply Lock", rf.me)
 		for !(rf.lastApplied < rf.commitIndex) {
 			rf.cv.Wait()
 		}
-		// DPrintf("%d : before apply", rf.me)
+		// DPrintf("%d : lastApplied = %d, commitIndex = %d", rf.me, rf.lastApplied, rf.commitIndex)
 		for i := rf.lastApplied; i <= rf.commitIndex; i++ {
 			rf.applyCh <- ApplyMsg{CommandValid: true, Command: rf.log[i].Command, CommandIndex: i}
 			rf.lastApplied = i
