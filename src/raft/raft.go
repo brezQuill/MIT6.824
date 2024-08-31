@@ -255,22 +255,23 @@ func (rf *Raft) heartbeats(id int, term int) {
 		args.PrevLogTerm = rf.log[rf.commitIndex].Term
 		//
 		rf.mu.RUnlock()
-		for server, _ := range rf.peers {
-			if server == rf.me {
-				continue
-			}
-			go func(x int, myInfo AppendEntriesArgs) {
-				reply := AppendEntriesReply{}
-				rf.peers[x].Call("Raft.AppendEntries", &myInfo, &reply)
-				rf.mu.Lock()
-				defer rf.mu.Unlock()
+		rf.sendAppendEntries(term)
+		// for server, _ := range rf.peers {
+		// 	if server == rf.me {
+		// 		continue
+		// 	}
+		// 	go func(x int, myInfo AppendEntriesArgs) {
+		// 		reply := AppendEntriesReply{}
+		// 		rf.peers[x].Call("Raft.AppendEntries", &myInfo, &reply)
+		// 		rf.mu.Lock()
+		// 		defer rf.mu.Unlock()
 
-				if reply.Term > rf.currentTerm {
-					rf.ChangeToFollower(reply.Term)
-					rf.ElectionTimerReset()
-				}
-			}(server, args)
-		}
+		// 		if reply.Term > rf.currentTerm {
+		// 			rf.ChangeToFollower(reply.Term)
+		// 			rf.ElectionTimerReset()
+		// 		}
+		// 	}(server, args)
+		// }
 		<-rf.heartBeatTimer.C
 		rf.HeartBeatTimerReset()
 	}
