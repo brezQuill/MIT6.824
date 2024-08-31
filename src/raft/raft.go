@@ -231,6 +231,7 @@ func (rf *Raft) startElection() {
 				rf.ChangeToLeader() // 内部停止选举计时器
 				DPrintf("%d : 当选！, Term = %d", rf.me, rf.currentTerm)
 				go rf.heartbeats(rf.me, rf.currentTerm)
+				go rf.sendAppendEntries(rf.currentTerm) // 初始化nextIndex
 			}
 		}(server, myInfo, reply)
 	}
@@ -289,7 +290,6 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 
 	if args.Term > rf.currentTerm {
 		rf.ChangeToFollower(args.Term)
-		rf.ElectionTimerReset()
 	}
 	if rf.voteFor != -1 && rf.voteFor != args.CandidateId { // 在同一轮，但是票已经投了（可能是投给自己）
 		reply.VoteGranted = 0
@@ -436,7 +436,8 @@ func min(a int, b int) int {
 					2) preLogIndex不存在 ：置nextIndex = conflictIndex
 */
 func (rf *Raft) sendAppendEntries(Term int) {
-
+	rf.mu.RLock()
+	defer rf.mu.RUnlock()
 	// 调用这个函数可以顺便发送heartbeats，对heartbeats做一下处理，重新计时
 	numMatched := 1
 	for i := 0; i < len(rf.peers); i++ {
@@ -444,10 +445,12 @@ func (rf *Raft) sendAppendEntries(Term int) {
 			continue
 		}
 		go func(x int) {
+			start := time.Now()
 			rf.mu.RLock()
+			DPrintf("%d : 发送RPC前, 竞争锁花费: %d", rf.me, time.Since(start).Milliseconds())
 			prevLogIndex := rf.nextIndex[x] - 1
-			DPrintf("%d : nextIndex = %v", rf.me, rf.nextIndex)
 			args := AppendEntriesArgs{Term, rf.me, prevLogIndex, rf.log[prevLogIndex].Term, rf.log[rf.nextIndex[x]:], rf.commitIndex}
+			DPrintf("%d   send    to %d: len(args.Entries) = %d, nextIndex = %v", rf.me, x, len(args.Entries), rf.nextIndex)
 			rf.mu.RUnlock()
 
 			for !rf.killed() {
@@ -486,6 +489,8 @@ func (rf *Raft) sendAppendEntries(Term int) {
 						}
 						rf.nextIndex[x] = args.PrevLogIndex + 1 + len(args.Entries) // 这里需要+1
 						rf.matchIndex[x] = args.PrevLogIndex + len(args.Entries)
+						DPrintf("%d receive from %d: len(args.Entries) = %d, nextIndex = %v", rf.me, x, len(args.Entries), rf.nextIndex)
+
 						numMatched++
 
 						// preCommit := rf.commitIndex // for debug
@@ -542,7 +547,7 @@ func (rf *Raft) sendAppendEntries(Term int) {
 //
 func (rf *Raft) Start(command interface{}) (int, int, bool) {
 	rf.mu.RLock()
-	index := len(rf.log)
+	index := -1
 	term := rf.currentTerm
 	isLeader := rf.role == LEADER
 	rf.mu.RUnlock()
@@ -553,7 +558,7 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 		entry := Entry{Term: term, Command: command}
 		rf.log = append(rf.log, entry)
 		index = len(rf.log) - 1
-		rf.sendAppendEntries(term)
+		go rf.sendAppendEntries(term)
 		rf.mu.Unlock()
 		// 因为是解锁后传送RPC，需要确保传送的RPC携带的Term没有被改变
 	}
@@ -609,7 +614,6 @@ func (rf *Raft) ChangeToLeader() {
 		rf.nextIndex[server] = len(rf.log)
 		rf.matchIndex[server] = 0
 	}
-	rf.sendAppendEntries(rf.currentTerm)
 }
 
 func (rf *Raft) ElectionTimerReset() {
@@ -712,19 +716,13 @@ func (rf *Raft) Kill() {
 
 func (rf *Raft) killed() bool {
 	z := atomic.LoadInt32(&rf.dead)
-	if z == 1 {
-		rf.mu.RLock()
-		// DPrintf("%d :killed", rf.me)
-		rf.mu.RUnlock()
-	}
-
 	return z == 1
 }
 
 func randomizedElectionTimeout() time.Duration {
-	return time.Duration(time.Duration(160+rand.Intn(200)) * time.Millisecond)
+	return time.Duration(time.Duration(150+rand.Intn(200)) * time.Millisecond)
 }
 
 func heartBeatTimeout() time.Duration {
-	return time.Duration(150 * time.Millisecond)
+	return time.Duration(120 * time.Millisecond)
 }
