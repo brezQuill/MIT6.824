@@ -437,6 +437,7 @@ func (cfg *config) checkNoLeader() {
 func (cfg *config) nCommitted(index int) (int, interface{}) {
 	count := 0
 	var cmd interface{} = nil
+	logsLen := make([]int, 0) // 我加的
 	for i := 0; i < len(cfg.rafts); i++ {
 		if cfg.applyErr[i] != "" {
 			cfg.t.Fatal(cfg.applyErr[i])
@@ -444,6 +445,7 @@ func (cfg *config) nCommitted(index int) (int, interface{}) {
 
 		cfg.mu.Lock()
 		cmd1, ok := cfg.logs[i][index]
+		logsLen = append(logsLen, len(cfg.logs[i])) // 我加的
 		cfg.mu.Unlock()
 
 		if ok {
@@ -455,6 +457,7 @@ func (cfg *config) nCommitted(index int) (int, interface{}) {
 			cmd = cmd1
 		}
 	}
+	CPrintf("每个server提交的数目：%v", logsLen)
 	return count, cmd
 }
 
@@ -530,6 +533,8 @@ func (cfg *config) one(cmd interface{}, expectedServers int, retry bool) int {
 			t1 := time.Now()
 			for time.Since(t1).Seconds() < 2 {
 				nd, cmd1 := cfg.nCommitted(index)
+				DPrintf("cmd = %v, cmd1 = %v, nd = %d, index = %d", cmd, cmd1, nd, index)
+
 				if nd > 0 && nd >= expectedServers {
 					// committed
 					if cmd1 == cmd {
@@ -537,10 +542,12 @@ func (cfg *config) one(cmd interface{}, expectedServers int, retry bool) int {
 						return index
 					}
 				}
+
 				time.Sleep(20 * time.Millisecond)
 			}
 			if retry == false {
 				cfg.t.Fatalf("one(%v) failed to reach agreement", cmd)
+
 			}
 		} else {
 			time.Sleep(50 * time.Millisecond)

@@ -609,11 +609,12 @@ func TestPersist12C(t *testing.T) {
 	cfg.one(13, servers, true)
 
 	leader2 := cfg.checkOneLeader()
+
 	cfg.disconnect(leader2)
 	cfg.one(14, servers-1, true)
 	cfg.start1(leader2, cfg.applier)
 	cfg.connect(leader2)
-
+	KPrintf("leader1 : %d, leader2 : %d", leader1, leader2)
 	cfg.wait(4, servers, -1) // wait for leader2 to join before killing i3
 
 	i3 := (cfg.checkOneLeader() + 1) % servers
@@ -810,6 +811,7 @@ func TestFigure8Unreliable2C(t *testing.T) {
 	nup := servers
 	for iters := 0; iters < 1000; iters++ {
 		if iters == 200 {
+			DPrintf("iters == 200")
 			cfg.setlongreordering(true)
 		}
 		leader := -1
@@ -839,12 +841,6 @@ func TestFigure8Unreliable2C(t *testing.T) {
 				cfg.connect(s)
 				nup += 1
 			}
-		}
-	}
-
-	for i := 0; i < servers; i++ {
-		if cfg.connected[i] == false {
-			cfg.connect(i)
 		}
 	}
 
