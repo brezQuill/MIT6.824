@@ -278,16 +278,18 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 		// rf.ElectionTimerReset() // ?可能来自一个自嗨的孤儿server
 	}
 
-	if (rf.voteFor == rf.me && rf.isOutDate(args) && rf.role != LEADER) ||
-		((rf.voteFor == -1 || rf.voteFor == args.CandidateId) && !rf.isUpToDate(args)) {
+	isUpToDate := rf.isUpToDate(args)
+	if isUpToDate {
+		reply.OutDate = true // 告诉对方你过时了
+	} else if (rf.voteFor == rf.me && rf.isOutDate(args) && rf.role != LEADER) ||
+		((rf.voteFor == -1 || rf.voteFor == args.CandidateId) && !isUpToDate) {
 		// 同期候选选手, 但是人家更新 || 未投票且log不比人家新
 		rf.role = FOLLOWER
 		rf.voteFor = args.CandidateId
 		reply.VoteGranted = 1
 		rf.ElectionTimerReset()
-	} else {
-		reply.OutDate = true // 告诉对方你过时了
 	}
+
 	reply.Term = rf.currentTerm
 	go rf.persist()
 	TPrintf("%d## : RequestVote 花费时间=%v", rf.me, time.Since(start).Milliseconds())
@@ -342,10 +344,9 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 		if rf.log[args.PrevLogIndex].Term == args.PrevLogTerm {
 			// Term匹配成功
 			reply.Success = true
-
 			rf.updateLocalLog(args)
-
-			rf.commitIndex = min(args.LeaderCommit, args.PrevLogIndex+len(args.Entries))
+			temp := min(args.LeaderCommit, args.PrevLogIndex+len(args.Entries))
+			rf.commitIndex = max(temp, rf.commitIndex)
 			if rf.lastApplied < rf.commitIndex {
 				rf.cv.Signal()
 			}
@@ -861,4 +862,11 @@ func min(a int, b int) int {
 		return b
 	}
 	return a
+}
+
+func max(a int, b int) int {
+	if a > b {
+		return a
+	}
+	return b
 }
