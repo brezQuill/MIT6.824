@@ -117,12 +117,19 @@ func (rf *Raft) GetState() (int, bool) {
 // see paper's Figure 2 for a description of what should be persistent.
 //
 func (rf *Raft) persist() {
-	// Your code here (2C).
+	start := time.Now()
+	rf.mu.RLock()
+	Term := rf.currentTerm
+	voteFor := rf.voteFor
+	Log := DeepCopyEntries(rf.log)
+	rf.mu.RUnlock()
+	TPrintf("%d## : persist花费时间=%v", rf.me, time.Since(start).Milliseconds())
+
 	w := new(bytes.Buffer)
 	e := labgob.NewEncoder(w)
-	e.Encode(rf.currentTerm)
-	e.Encode(rf.voteFor)
-	e.Encode(rf.log)
+	e.Encode(Term)
+	e.Encode(voteFor)
+	e.Encode(Log)
 	data := w.Bytes()
 	rf.persister.SaveRaftState(data)
 }
@@ -202,30 +209,27 @@ type AppendEntriesReply struct {
 }
 
 func (rf *Raft) startElection() {
-	DPrintf("%d## : startElection开始", rf.me)
-	defer DPrintf("%d## : startElection结束", rf.me)
-
 	rf.mu.Lock()
 	defer rf.mu.Unlock()
 
 	rf.ElectionTimerReset()
 	rf.ChangeToCandidate()
 
-	KPrintf("%d## : 启动选举, Term = %d", rf.me, rf.currentTerm)
-	defer KPrintf("%d## : 结束选举, Term = %d", rf.me, rf.currentTerm)
+	KPrintf("%d## : 选举开始, Term = %d", rf.me, rf.currentTerm)
+	defer KPrintf("%d## : 选举结束, Term = %d", rf.me, rf.currentTerm)
 
 	myInfo := RequestVoteArgs{Term: rf.currentTerm, CandidateId: rf.me, LastLogIndex: len(rf.log) - 1, LastLogTerm: rf.log[len(rf.log)-1].Term}
 	reply := RequestVoteReply{}
 
 	recvFrom := make([]int, 0)
 	numVotes := 1
-	for server, _ := range rf.peers {
+	for server := range rf.peers {
 		if server == rf.me {
 			continue
 		}
 		go func(x int, myInfo RequestVoteArgs, reply RequestVoteReply) { // 要传局部变量，否则race
-			DPrintf("%d## send to %d: RequestVote开始", rf.me, x)
-			defer DPrintf("%d## send to %d : RequestVote结束", rf.me, x)
+			DPrintf("%d## send to %d: 拉票开始", rf.me, x)
+			defer DPrintf("%d## send to %d : 拉票结束", rf.me, x)
 			success := rf.peers[x].Call("Raft.RequestVote", &myInfo, &reply)
 			if !success {
 				return
@@ -236,7 +240,7 @@ func (rf *Raft) startElection() {
 			if reply.Term > rf.currentTerm {
 				rf.ChangeToFollower(reply.Term)
 				rf.StopHeartBeat()
-				rf.persist()
+				go rf.persist()
 				// rf.ElectionTimerReset() // ? 不要重置，回复可能来自一个被隔离的自嗨server
 				return
 			}
@@ -275,18 +279,20 @@ func (rf *Raft) heartbeats() {
 				go func(x int, myInfo AppendEntriesArgs) {
 					reply := AppendEntriesReply{}
 					rf.peers[x].Call("Raft.AppendEntries", &myInfo, &reply)
-					if !reply.Success {
-						return
+					if !reply.Success && reply.ConflictTerm == 0 {
+						DPrintf("%d## : 副作用心跳", rf.me)
 					} else {
 						DPrintf("%d## : 正常心跳", rf.me)
 					}
 					rf.mu.Lock()
 					defer rf.mu.Unlock()
-					if reply.Term > rf.currentTerm {
+					if reply.Term > rf.currentTerm { //
+						if rf.role == LEADER {
+							rf.StopHeartBeat()
+							rf.ElectionTimerReset() //从leader转为follower？？？？
+						}
 						rf.ChangeToFollower(reply.Term)
-						rf.StopHeartBeat()
-						rf.persist()
-						// rf.ElectionTimerReset()
+						go rf.persist()
 					}
 				}(server, args)
 			}
@@ -305,19 +311,20 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 	DPrintf("%d## reply to %d : RequestVote开始", rf.me, args.CandidateId)
 	defer DPrintf("%d## reply to %d : RequestVote结束", rf.me, args.CandidateId)
 	// Your code here (2A, 2B).
+	start := time.Now()
 	rf.mu.Lock()
+	TPrintf("%d## : RequestVote 抢锁花费时间=%v", rf.me, time.Since(start).Milliseconds())
 	defer rf.mu.Unlock()
 
 	if rf.currentTerm > args.Term {
 		reply.VoteGranted, reply.Term = 0, rf.currentTerm
-		CPrintf("%d## : old vote", rf.me)
+		TPrintf("%d## : old vote, 花费时间=%v", rf.me, time.Since(start).Milliseconds())
 		return
 	}
 
 	if args.Term > rf.currentTerm {
 		rf.ChangeToFollower(args.Term)
 		rf.StopHeartBeat()
-		rf.persist()
 		// rf.ElectionTimerReset() // ?可能来自一个自嗨的孤儿server
 	}
 
@@ -327,10 +334,11 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 		rf.role = FOLLOWER
 		rf.voteFor = args.CandidateId
 		reply.VoteGranted = 1
-		rf.persist()
 		rf.ElectionTimerReset()
 	}
 	reply.Term = rf.currentTerm
+	go rf.persist()
+	TPrintf("%d## : RequestVote 花费时间=%v", rf.me, time.Since(start).Milliseconds())
 }
 
 func (rf *Raft) isUpToDate(args *RequestVoteArgs) bool {
@@ -360,11 +368,12 @@ func (rf *Raft) isOutDate(args *RequestVoteArgs) bool {
 func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply) {
 	CPrintf("%d## reply to %d : AppendEntries开始", rf.me, args.LeaderId)
 	defer CPrintf("%d## reply to %d : AppendEntries结束", rf.me, args.LeaderId)
+	start := time.Now()
 	rf.mu.Lock()
 	defer rf.mu.Unlock()
 	if args.Term < rf.currentTerm {
 		reply.Term = rf.currentTerm
-		KPrintf("%d## : old entries", rf.me)
+		TPrintf("%d## : old entries, 花费时间=%v", rf.me, time.Since(start).Milliseconds())
 		return
 	} // 这个区域用读锁说不定有问题
 
@@ -372,7 +381,7 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 		KPrintf("%d## : 退位让贤", rf.me)
 		rf.ChangeToFollower(args.Term)
 		rf.StopHeartBeat()
-		rf.persist()
+		go rf.persist()
 	}
 	// 收到同期AppendPRC的时候，自己不可能是Leader，但可能是Candidate，不过没关系，因为同期server的票都投出去了
 	rf.ElectionTimerReset()
@@ -405,6 +414,7 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 		reply.ConflictIndex = len(rf.log)
 	}
 	reply.Term = rf.currentTerm
+	TPrintf("%d## : AppendEntries 花费时间=%v", rf.me, time.Since(start).Milliseconds())
 }
 
 /*
@@ -427,7 +437,7 @@ func (rf *Raft) updateLocalLog(args *AppendEntriesArgs) {
 			rf.log = append(rf.log, args.Entries[i:]...)
 		}
 	}
-	rf.persist()
+	go rf.persist()
 }
 
 //
@@ -511,10 +521,12 @@ func (rf *Raft) sendAppendEntries(Term int, LogLen int) {
 					rf.mu.Lock()
 
 					if reply.Term > rf.currentTerm {
+						if rf.role == LEADER {
+							rf.StopHeartBeat()
+							rf.ElectionTimerReset() // 从Leader状态退位，需要重启选举计时
+						}
 						rf.ChangeToFollower(reply.Term)
-						rf.StopHeartBeat()
-						rf.persist()
-						rf.ElectionTimerReset() // 从Leader状态退位，需要重启选举计时
+						go rf.persist()
 						rf.mu.Unlock()
 						return
 					}
@@ -635,23 +647,18 @@ func DeepCopyEntries(entries []Entry) []Entry {
 func (rf *Raft) Start(command interface{}) (int, int, bool) {
 	// DPrintf("%d## : Start开始", rf.me)
 	// defer DPrintf("%d## : Start结束", rf.me)
-	rf.mu.RLock()
+	// DPrintf("%d## : currentTerm = %d, command = %v, nextIndex = %v", rf.me, term, command, rf.nextIndex)
+	rf.mu.Lock()
+	defer rf.mu.Unlock()
 	index := -1
 	term := rf.currentTerm
 	isLeader := rf.role == LEADER
-	// DPrintf("%d## : currentTerm = %d, command = %v, nextIndex = %v", rf.me, term, command, rf.nextIndex)
-	rf.mu.RUnlock()
-
 	if isLeader {
-		rf.mu.Lock()
-		entry := Entry{Term: term, Command: command}
-		rf.log = append(rf.log, entry)
-		rf.persist()
+		rf.log = append(rf.log, Entry{Term: term, Command: command})
+		go rf.persist()
 		index = len(rf.log) - 1
-		rf.mu.Unlock()
-		rf.sendAppendEntries(term, index+1)
+		go rf.sendAppendEntries(term, index+1)
 	}
-
 	return index, term, isLeader
 }
 
@@ -785,7 +792,7 @@ func (rf *Raft) ChangeToCandidate() {
 	rf.role = CANDIDATE
 	rf.currentTerm++
 	rf.voteFor = rf.me
-	rf.persist()
+	go rf.persist()
 }
 
 func (rf *Raft) ChangeToLeader() {
