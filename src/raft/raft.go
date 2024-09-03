@@ -468,7 +468,7 @@ func (rf *Raft) sendAppendEntries(Term int, LogLen int) {
 						return
 					}
 					rf.mu.RUnlock()
-					time.Sleep(10 * time.Millisecond) // 休眠一会儿再重发
+					time.Sleep(20 * time.Millisecond) // 休眠一会儿再重发
 				} else {
 					// 网络成功
 					rf.mu.Lock()
@@ -539,14 +539,12 @@ func (rf *Raft) sendAppendEntries(Term int, LogLen int) {
 }
 
 func (rf *Raft) startElection() {
-	rf.mu.Lock()
-	defer rf.mu.Unlock()
 
 	rf.ElectionTimerReset()
 	rf.ChangeToCandidate()
 
-	KPrintf("%d## : 选举开始, Term = %d", rf.me, rf.currentTerm)
-	defer KPrintf("%d## : 选举结束, Term = %d", rf.me, rf.currentTerm)
+	KPrintf("%d## : 选举开始, currentTerm = %d", rf.me, rf.currentTerm)
+	defer KPrintf("%d## : 选举结束, currentTerm = %d", rf.me, rf.currentTerm)
 
 	myInfo := RequestVoteArgs{Term: rf.currentTerm, CandidateId: rf.me, LastLogIndex: len(rf.log) - 1, LastLogTerm: rf.log[len(rf.log)-1].Term}
 
@@ -570,20 +568,18 @@ func (rf *Raft) startElection() {
 						return
 					}
 					rf.mu.RUnlock()
-					time.Sleep(10 * time.Millisecond)
+					time.Sleep(20 * time.Millisecond)
 				} else {
 					rf.mu.Lock()
 					defer rf.mu.Unlock()
 
 					if reply.OutDate {
-						rf.ElectionTimerReset(100) // 过时重设
+						rf.ElectionTimerReset(100) // 过时惩罚
 					}
 
 					if reply.Term > rf.currentTerm {
 						rf.ChangeToFollower(reply.Term)
-						rf.StopHeartBeat()
 						go rf.persist()
-						// rf.ElectionTimerReset() // ? 不要重置，回复可能来自一个被隔离的自嗨server
 						return
 					}
 
@@ -689,7 +685,9 @@ func (rf *Raft) ticker() {
 	for !rf.killed() {
 		// 不是leader尝试发起选举
 		<-rf.electionTimer.C
-		go rf.startElection()
+		rf.mu.Lock()
+		rf.startElection()
+		rf.mu.Unlock()
 	}
 
 }
@@ -788,9 +786,9 @@ func (rf *Raft) killed() bool {
 
 func (rf *Raft) randomizedElectionTimeout(postpone ...int) time.Duration {
 	if len(postpone) == 1 {
-		return time.Duration(time.Duration(postpone[0]+130+rf.me*20+rand.Intn(20)) * time.Millisecond)
+		return time.Duration(time.Duration(postpone[0]+130+rf.me*5+rand.Intn(200)) * time.Millisecond)
 	}
-	return time.Duration(time.Duration(130+rf.me*20+rand.Intn(20)) * time.Millisecond)
+	return time.Duration(time.Duration(130+rf.me*5+rand.Intn(200)) * time.Millisecond)
 }
 
 func heartBeatTimeout() time.Duration {
