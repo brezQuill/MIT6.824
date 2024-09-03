@@ -190,6 +190,7 @@ type RequestVoteReply struct {
 	// Your data here (2A).
 	Term        int
 	VoteGranted int
+	OutDate     bool
 }
 
 type AppendEntriesArgs struct {
@@ -206,57 +207,6 @@ type AppendEntriesReply struct {
 	Success       bool
 	ConflictIndex int
 	ConflictTerm  int
-}
-
-func (rf *Raft) startElection() {
-	rf.mu.Lock()
-	defer rf.mu.Unlock()
-
-	rf.ElectionTimerReset()
-	rf.ChangeToCandidate()
-
-	KPrintf("%d## : 选举开始, Term = %d", rf.me, rf.currentTerm)
-	defer KPrintf("%d## : 选举结束, Term = %d", rf.me, rf.currentTerm)
-
-	myInfo := RequestVoteArgs{Term: rf.currentTerm, CandidateId: rf.me, LastLogIndex: len(rf.log) - 1, LastLogTerm: rf.log[len(rf.log)-1].Term}
-	reply := RequestVoteReply{}
-
-	recvFrom := make([]int, 0)
-	numVotes := 1
-	for server := range rf.peers {
-		if server == rf.me {
-			continue
-		}
-		go func(x int, myInfo RequestVoteArgs, reply RequestVoteReply) { // 要传局部变量，否则race
-			DPrintf("%d## send to %d: 拉票开始", rf.me, x)
-			defer DPrintf("%d## send to %d : 拉票结束", rf.me, x)
-			success := rf.peers[x].Call("Raft.RequestVote", &myInfo, &reply)
-			if !success {
-				return
-			}
-			rf.mu.Lock()
-			defer rf.mu.Unlock()
-
-			if reply.Term > rf.currentTerm {
-				rf.ChangeToFollower(reply.Term)
-				rf.StopHeartBeat()
-				go rf.persist()
-				// rf.ElectionTimerReset() // ? 不要重置，回复可能来自一个被隔离的自嗨server
-				return
-			}
-
-			if reply.VoteGranted == 1 {
-				recvFrom = append(recvFrom, x)
-			}
-
-			numVotes += reply.VoteGranted
-			if numVotes > len(rf.peers)/2 && rf.role == CANDIDATE && rf.currentTerm == myInfo.Term {
-				rf.ChangeToLeader() // 内部停止选举计时器
-				KPrintf("%d## : 当选！, Term = %d, 票来自：%v", rf.me, rf.currentTerm, recvFrom)
-				go rf.sendAppendEntries(rf.currentTerm, len(rf.log)) // 初始化nextIndex
-			}
-		}(server, myInfo, reply)
-	}
 }
 
 // 随心跳传递当前commitIndex
@@ -335,6 +285,8 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 		rf.voteFor = args.CandidateId
 		reply.VoteGranted = 1
 		rf.ElectionTimerReset()
+	} else {
+		reply.OutDate = true // 告诉对方你过时了
 	}
 	reply.Term = rf.currentTerm
 	go rf.persist()
@@ -537,16 +489,17 @@ func (rf *Raft) sendAppendEntries(Term int, LogLen int) {
 					}
 
 					if reply.Success {
-						if rf.nextIndex[x] > args.PrevLogIndex+1+len(args.Entries) ||
-							rf.matchIndex[x] > args.PrevLogIndex+len(args.Entries) {
+						numMatched++
+						nextIndex := args.PrevLogIndex + 1 + len(args.Entries)
+						matchIndex := args.PrevLogIndex + len(args.Entries)
+						if rf.nextIndex[x] > nextIndex || rf.matchIndex[x] > matchIndex {
 							// 当并发传送RPC时，其中某些reply超车，并且已经更新了leader的nextIndex，直接返回
 							rf.mu.Unlock() // 这里没有解锁....这个bug花了5个小时
 							return
 						}
-						rf.nextIndex[x] = args.PrevLogIndex + 1 + len(args.Entries) // 这里需要+1
-						rf.matchIndex[x] = args.PrevLogIndex + len(args.Entries)
+						rf.nextIndex[x] = nextIndex
+						rf.matchIndex[x] = matchIndex
 						CPrintf("%d## : nextIndex=%v, matchIndex=%v, commitIndex=%d", rf.me, rf.nextIndex, rf.matchIndex, rf.commitIndex)
-						numMatched++
 
 						if numMatched > len(rf.peers)/2 &&
 							rf.commitIndex < rf.matchIndex[x] &&
@@ -582,6 +535,73 @@ func (rf *Raft) sendAppendEntries(Term int, LogLen int) {
 		}(i)
 	}
 	rf.HeartBeatTimerReset()
+}
+
+func (rf *Raft) startElection() {
+	rf.mu.Lock()
+	defer rf.mu.Unlock()
+
+	rf.ElectionTimerReset()
+	rf.ChangeToCandidate()
+
+	KPrintf("%d## : 选举开始, Term = %d", rf.me, rf.currentTerm)
+	defer KPrintf("%d## : 选举结束, Term = %d", rf.me, rf.currentTerm)
+
+	myInfo := RequestVoteArgs{Term: rf.currentTerm, CandidateId: rf.me, LastLogIndex: len(rf.log) - 1, LastLogTerm: rf.log[len(rf.log)-1].Term}
+
+	recvFrom := make([]int, 0)
+	numVotes := 1
+	for server := range rf.peers {
+		if server == rf.me {
+			continue
+		}
+		go func(x int, myInfo RequestVoteArgs) { // 要传局部变量，否则race
+			DPrintf("%d## send to %d: 拉票开始", rf.me, x)
+			defer DPrintf("%d## send to %d : 拉票结束", rf.me, x)
+			for !rf.killed() {
+				reply := RequestVoteReply{}
+				success := rf.peers[x].Call("Raft.RequestVote", &myInfo, &reply)
+				if !success {
+					rf.mu.RLock()
+					if rf.currentTerm != myInfo.Term || rf.role != CANDIDATE || numVotes > len(rf.peers)/2 {
+						// 任期改变 || 不再是候选者 || 票数已满足
+						rf.mu.RUnlock()
+						return
+					}
+					rf.mu.RUnlock()
+					time.Sleep(10 * time.Millisecond)
+				} else {
+					rf.mu.Lock()
+					defer rf.mu.Unlock()
+
+					if reply.OutDate {
+						rf.ElectionTimerReset(100) // 过时重设
+					}
+
+					if reply.Term > rf.currentTerm {
+						rf.ChangeToFollower(reply.Term)
+						rf.StopHeartBeat()
+						go rf.persist()
+						// rf.ElectionTimerReset() // ? 不要重置，回复可能来自一个被隔离的自嗨server
+						return
+					}
+
+					if reply.VoteGranted == 1 {
+						recvFrom = append(recvFrom, x)
+					}
+
+					numVotes += reply.VoteGranted
+					if numVotes > len(rf.peers)/2 && rf.role == CANDIDATE && rf.currentTerm == myInfo.Term {
+						rf.ChangeToLeader() // 内部停止选举计时器
+						KPrintf("%d## : 当选！, Term = %d, 票来自：%v", rf.me, rf.currentTerm, recvFrom)
+						go rf.sendAppendEntries(rf.currentTerm, len(rf.log)) // 初始化nextIndex
+					}
+					return
+				}
+			}
+
+		}(server, myInfo)
+	}
 }
 
 // 利用反射进行深拷贝
@@ -719,7 +739,7 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	rf.applyCh = applyCh
 	rf.cv = sync.NewCond(&rf.mu)
 	rf.role = FOLLOWER
-	rf.electionTimer = time.NewTimer(randomizedElectionTimeout())
+	rf.electionTimer = time.NewTimer(rf.randomizedElectionTimeout())
 	rf.heartBeatTimer = time.NewTimer(heartBeatTimeout()) // 创建时就启动倒计时
 
 	rf.dead = 0
@@ -765,12 +785,15 @@ func (rf *Raft) killed() bool {
 	return z == 1
 }
 
-func randomizedElectionTimeout() time.Duration {
-	return time.Duration(time.Duration(220+rand.Intn(200)) * time.Millisecond)
+func (rf *Raft) randomizedElectionTimeout(postpone ...int) time.Duration {
+	if len(postpone) == 1 {
+		return time.Duration(time.Duration(postpone[0]+130+rf.me*20+rand.Intn(20)) * time.Millisecond)
+	}
+	return time.Duration(time.Duration(130+rf.me*20+rand.Intn(20)) * time.Millisecond)
 }
 
 func heartBeatTimeout() time.Duration {
-	return time.Duration(150 * time.Millisecond)
+	return time.Duration(110 * time.Millisecond)
 }
 
 func (rf *Raft) ChangeToFollower(Term int) {
@@ -810,14 +833,17 @@ func (rf *Raft) ChangeToLeader() {
 	}
 }
 
-func (rf *Raft) ElectionTimerReset() {
+func (rf *Raft) ElectionTimerReset(postpone ...int) {
 	if !rf.electionTimer.Stop() {
 		select {
 		case <-rf.electionTimer.C:
 		default:
 		}
 	}
-	rf.electionTimer.Reset(randomizedElectionTimeout())
+	if len(postpone) == 1 {
+		rf.electionTimer.Reset(rf.randomizedElectionTimeout(postpone[0]))
+	}
+	rf.electionTimer.Reset(rf.randomizedElectionTimeout())
 }
 
 func (rf *Raft) HeartBeatTimerReset() {

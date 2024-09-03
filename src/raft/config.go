@@ -553,7 +553,8 @@ func (cfg *config) one(cmd interface{}, expectedServers int, retry bool) int {
 			time.Sleep(50 * time.Millisecond)
 		}
 	}
-	cfg.t.Fatalf("one(%v) failed to reach agreement", cmd)
+	cfg.t.Fatalf("one(%v) failed to reach agreement, have no leader?", cmd)
+	cfg.checkOneLeader() // 我加上的
 	return -1
 }
 
