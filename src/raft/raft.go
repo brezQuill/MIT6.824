@@ -43,6 +43,7 @@ const (
 type Entry struct {
 	Term    int
 	Command interface{}
+	Index   int
 }
 
 //
@@ -118,20 +119,14 @@ func (rf *Raft) GetState() (int, bool) {
 //
 func (rf *Raft) persist() {
 	start := time.Now()
-	rf.mu.RLock()
-	Term := rf.currentTerm
-	voteFor := rf.voteFor
-	Log := DeepCopyEntries(rf.log)
-	rf.mu.RUnlock()
-	TPrintf("%d## : persist花费时间=%v", rf.me, time.Since(start).Milliseconds())
-
 	w := new(bytes.Buffer)
 	e := labgob.NewEncoder(w)
-	e.Encode(Term)
-	e.Encode(voteFor)
-	e.Encode(Log)
+	e.Encode(rf.currentTerm)
+	e.Encode(rf.voteFor)
+	e.Encode(rf.log)
 	data := w.Bytes()
 	rf.persister.SaveRaftState(data)
+	TPrintf("%d## : persist花费时间=%v", rf.me, time.Since(start).Milliseconds())
 }
 
 //
@@ -242,7 +237,7 @@ func (rf *Raft) heartbeats() {
 							rf.ElectionTimerReset() //从leader转为follower？？？？
 						}
 						rf.ChangeToFollower(reply.Term)
-						go rf.persist()
+						rf.persist()
 					}
 				}(server, args)
 			}
@@ -291,7 +286,7 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 	}
 
 	reply.Term = rf.currentTerm
-	go rf.persist()
+	rf.persist()
 	TPrintf("%d## : RequestVote 花费时间=%v", rf.me, time.Since(start).Milliseconds())
 }
 
@@ -335,7 +330,7 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 		KPrintf("%d## : 退位让贤", rf.me)
 		rf.ChangeToFollower(args.Term)
 		rf.StopHeartBeat()
-		go rf.persist()
+		rf.persist()
 	}
 	// 收到同期AppendPRC的时候，自己不可能是Leader，但可能是Candidate，不过没关系，因为同期server的票都投出去了
 	rf.ElectionTimerReset()
@@ -390,7 +385,7 @@ func (rf *Raft) updateLocalLog(args *AppendEntriesArgs) {
 			rf.log = append(rf.log, args.Entries[i:]...)
 		}
 	}
-	go rf.persist()
+	rf.persist()
 }
 
 //
@@ -479,7 +474,7 @@ func (rf *Raft) sendAppendEntries(Term int, LogLen int) {
 							rf.ElectionTimerReset() // 从Leader状态退位，需要重启选举计时
 						}
 						rf.ChangeToFollower(reply.Term)
-						go rf.persist()
+						rf.persist()
 						rf.mu.Unlock()
 						return
 					}
@@ -579,7 +574,7 @@ func (rf *Raft) startElection() {
 
 					if reply.Term > rf.currentTerm {
 						rf.ChangeToFollower(reply.Term)
-						go rf.persist()
+						rf.persist()
 						return
 					}
 
@@ -672,7 +667,7 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 	isLeader := rf.role == LEADER
 	if isLeader {
 		rf.log = append(rf.log, Entry{Term: term, Command: command})
-		go rf.persist()
+		rf.persist()
 		index = len(rf.log) - 1
 		go rf.sendAppendEntries(term, index+1)
 	}
@@ -786,13 +781,13 @@ func (rf *Raft) killed() bool {
 
 func (rf *Raft) randomizedElectionTimeout(postpone ...int) time.Duration {
 	if len(postpone) == 1 {
-		return time.Duration(time.Duration(postpone[0]+130+rf.me*5+rand.Intn(200)) * time.Millisecond)
+		return time.Duration(time.Duration(postpone[0]+220+rf.me*5+rand.Intn(200)) * time.Millisecond)
 	}
-	return time.Duration(time.Duration(130+rf.me*5+rand.Intn(200)) * time.Millisecond)
+	return time.Duration(time.Duration(220+rf.me*5+rand.Intn(200)) * time.Millisecond)
 }
 
 func heartBeatTimeout() time.Duration {
-	return time.Duration(110 * time.Millisecond)
+	return time.Duration(150 * time.Millisecond)
 }
 
 func (rf *Raft) ChangeToFollower(Term int) {
@@ -814,7 +809,7 @@ func (rf *Raft) ChangeToCandidate() {
 	rf.role = CANDIDATE
 	rf.currentTerm++
 	rf.voteFor = rf.me
-	go rf.persist()
+	rf.persist()
 }
 
 func (rf *Raft) ChangeToLeader() {
