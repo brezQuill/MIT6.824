@@ -14,7 +14,7 @@ const Fflag = false
 const all = false
 
 func DPrintf(format string, a ...interface{}) (n int, err error) {
-	if Debug {
+	if Debug && all {
 		log.Printf(format, a...)
 	}
 	return

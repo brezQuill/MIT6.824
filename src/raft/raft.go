@@ -69,6 +69,18 @@ type ApplyMsg struct {
 	SnapshotIndex int
 }
 
+type InstallSnapshotRequest struct {
+	Term              int
+	LeaderId          int
+	Snapshot          []byte
+	LastIncludedIndex int
+	LastIncludedTerm  int
+}
+
+type InstallSnapshotResponse struct {
+	Term int
+}
+
 //
 // A Go object implementing a single Raft peer.
 //
@@ -117,7 +129,7 @@ func (rf *Raft) GetState() (int, bool) {
 // where it can later be retrieved after a crash and restart.
 // see paper's Figure 2 for a description of what should be persistent.
 //
-func (rf *Raft) persist() {
+func (rf *Raft) persist() []byte {
 	start := time.Now()
 	w := new(bytes.Buffer)
 	e := labgob.NewEncoder(w)
@@ -127,6 +139,7 @@ func (rf *Raft) persist() {
 	data := w.Bytes()
 	rf.persister.SaveRaftState(data)
 	TPrintf("%d## : persist花费时间=%v", rf.me, time.Since(start).Milliseconds())
+	return data
 }
 
 //
@@ -153,24 +166,85 @@ func (rf *Raft) readPersist(data []byte) {
 	}
 }
 
-//
-// A service wants to switch to snapshot.  Only do so if Raft hasn't
-// have more recent info since it communicate the snapshot on applyCh.
-//
-func (rf *Raft) CondInstallSnapshot(lastIncludedTerm int, lastIncludedIndex int, snapshot []byte) bool {
-
-	// Your code here (2D).
-
-	return true
-}
-
 // the service says it has created a snapshot that has
 // all info up to and including index. this means the
 // service no longer needs the log through (and including)
 // that index. Raft should now trim its log as much as possible.
 func (rf *Raft) Snapshot(index int, snapshot []byte) {
-	// Your code here (2D).
+	rf.mu.Lock()
+	defer rf.mu.Unlock()
+	snapshotIndex := rf.firstEntry().Index
+	if index <= snapshotIndex {
+		return
+	}
+	rf.log = shrinkEntriesArray(rf.log[index-snapshotIndex:])
+	rf.log[0].Command = nil
+	rf.persister.SaveStateAndSnapshot(rf.persist(), snapshot)
+}
 
+func shrinkEntriesArray(entries []Entry) []Entry {
+	newEntries := make([]Entry, len(entries))
+	copy(newEntries, entries)
+	return newEntries
+}
+
+//
+// A service wants to switch to snapshot.  Only do so if Raft hasn't
+// have more recent info since it communicate the snapshot on applyCh.
+//
+func (rf *Raft) CondInstallSnapshot(lastIncludedTerm int, lastIncludedIndex int, snapshot []byte) bool {
+	rf.mu.Lock()
+	defer rf.mu.Unlock()
+
+	// outdated snapshot
+	if lastIncludedIndex <= rf.commitIndex {
+		return false
+	}
+
+	if lastIncludedIndex > rf.lastEntry().Index {
+		rf.log = make([]Entry, 1)
+	} else {
+		rf.log = shrinkEntriesArray(rf.log[lastIncludedIndex-rf.firstEntry().Index:])
+		rf.log[0].Command = nil
+	}
+	// update dummy entry with lastIncludedTerm and lastIncludedIndex
+	rf.log[0].Term, rf.log[0].Index = lastIncludedTerm, lastIncludedIndex
+	rf.lastApplied, rf.commitIndex = lastIncludedIndex, lastIncludedIndex
+
+	rf.persister.SaveStateAndSnapshot(rf.persist(), snapshot)
+	return true
+}
+
+func (rf *Raft) InstallSnapshot(request *InstallSnapshotRequest, response *InstallSnapshotResponse) {
+	rf.mu.Lock()
+	defer rf.mu.Unlock()
+
+	response.Term = rf.currentTerm
+
+	if request.Term < rf.currentTerm {
+		return
+	}
+
+	if request.Term > rf.currentTerm {
+		rf.ChangeToFollower(request.Term)
+		rf.persist()
+	}
+
+	rf.ElectionTimerReset()
+
+	// outdated snapshot
+	if request.LastIncludedIndex <= rf.commitIndex {
+		return
+	}
+
+	go func() {
+		rf.applyCh <- ApplyMsg{
+			SnapshotValid: true,
+			Snapshot:      request.Snapshot,
+			SnapshotTerm:  request.LastIncludedTerm,
+			SnapshotIndex: request.LastIncludedIndex,
+		}
+	}()
 }
 
 type RequestVoteArgs struct {
@@ -340,6 +414,12 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 		rf.StopHeartBeat()
 		rf.persist()
 	}
+
+	if args.PrevLogIndex < rf.firstEntry().Index {
+		reply.Term, reply.Success, reply.ConflictIndex = 0, false, args.Entries[len(args.Entries)-1].Index+1
+		return
+	}
+
 	// 收到同期AppendPRC的时候，自己不可能是Leader，但可能是Candidate，不过没关系，因为同期server的票都投出去了
 	rf.ElectionTimerReset()
 	if rf.lastEntry().Index >= args.PrevLogIndex {
@@ -522,7 +602,7 @@ func (rf *Raft) sendAppendEntries(Term int, LastLogIndex int) {
 					rf.nextIndex[x] = reply.ConflictIndex
 					args.PrevLogIndex = reply.ConflictIndex - 1
 					args.Entries = rf.log[rf.nextIndex[x]-rf.firstEntry().Index:]
-					args.PrevLogTerm = rf.log[prevLogIndex-rf.firstEntry().Index].Term
+					args.PrevLogTerm = rf.log[args.PrevLogIndex-rf.firstEntry().Index].Term
 					args.LeaderCommit = rf.commitIndex
 
 					rf.mu.Unlock()
