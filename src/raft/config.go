@@ -457,7 +457,7 @@ func (cfg *config) nCommitted(index int) (int, interface{}) {
 			cmd = cmd1
 		}
 	}
-	defer FPrintf("每个server提交的数目：%v,共有%d个server提交了index=%d的entry", logsLen, count, index)
+	defer DPrintf("每个server提交的数目：%v,共有%d个server提交了index=%d的entry", logsLen, count, index)
 	return count, cmd
 }
 

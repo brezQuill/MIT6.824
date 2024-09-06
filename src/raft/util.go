@@ -5,44 +5,25 @@ import "log"
 // false  true
 // Debugging
 const Debug = false // 打印goroutine退出情况
-const Cflag = true
-const Tflag = true
-const Kflag = true // 专门针对某个bug的猜想
-
-const Fflag = false
-
-const all = false
+const Cflag = false
+const Tflag = false
 
 func DPrintf(format string, a ...interface{}) (n int, err error) {
-	if Debug && all {
-		log.Printf(format, a...)
-	}
-	return
-}
-
-func CPrintf(format string, a ...interface{}) (n int, err error) {
-	if Cflag && all {
+	if Debug {
 		log.Printf(format, a...)
 	}
 	return
 }
 
 func TPrintf(format string, a ...interface{}) (n int, err error) {
-	if Tflag && all {
+	if Tflag {
 		log.Printf(format, a...)
 	}
 	return
 }
 
-func KPrintf(format string, a ...interface{}) (n int, err error) {
-	if Kflag && all {
-		log.Printf(format, a...)
-	}
-	return
-}
-
-func FPrintf(format string, a ...interface{}) (n int, err error) {
-	if Fflag {
+func CPrintf(format string, a ...interface{}) (n int, err error) {
+	if Cflag {
 		log.Printf(format, a...)
 	}
 	return

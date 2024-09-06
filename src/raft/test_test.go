@@ -614,7 +614,7 @@ func TestPersist12C(t *testing.T) {
 	cfg.one(14, servers-1, true)
 	cfg.start1(leader2, cfg.applier)
 	cfg.connect(leader2)
-	KPrintf("leader1 : %d, leader2 : %d", leader1, leader2)
+	CPrintf("leader1 : %d, leader2 : %d", leader1, leader2)
 	cfg.wait(4, servers, -1) // wait for leader2 to join before killing i3
 
 	i3 := (cfg.checkOneLeader() + 1) % servers
