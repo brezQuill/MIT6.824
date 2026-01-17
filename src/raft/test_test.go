@@ -843,12 +843,25 @@ func TestFigure8Unreliable2C(t *testing.T) {
 			}
 		}
 	}
-
+	type state struct {
+		id       int
+		term     int
+		isleader bool
+	}
+	apartServer := make([]state, 0)
+	connectedServer := make([]state, 0)
 	for i := 0; i < servers; i++ {
 		if cfg.connected[i] == false {
 			cfg.connect(i)
+			term, isleader := cfg.rafts[i].GetState()
+			apartServer = append(apartServer, state{i, term, isleader})
+		} else {
+			term, isleader := cfg.rafts[i].GetState()
+			connectedServer = append(connectedServer, state{i, term, isleader})
 		}
 	}
+	SPrintf("\n\n\n\n================================================================================\n\n\n\n")
+	SPrintf("config : apartServer = %v, connectedServer=  %v", apartServer, connectedServer)
 	// cfg.checkOneLeader()
 	cfg.one(rand.Int()%10000, servers, true)
 
