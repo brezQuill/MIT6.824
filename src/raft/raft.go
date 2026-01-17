@@ -102,10 +102,10 @@ type Raft struct {
 	nextIndex  []int // ##Reinitialized after election## for each server, index of the next log entry to send to that server
 	matchIndex []int // for each server, index of highest log entry known to be replicated on server
 
-	electionTimer  *time.Timer
-	heartBeatTimer *time.Timer
-	applyCh        chan ApplyMsg
-	applyCv        *sync.Cond
+	electionTime  atomic.Value
+	heartBeatTime atomic.Value
+	applyCh       chan ApplyMsg
+	applyCv       *sync.Cond
 
 	replicatorCV []*sync.Cond
 }
@@ -248,53 +248,9 @@ func (rf *Raft) InstallSnapshot(request *InstallSnapshotArg, response *InstallSn
 	}()
 }
 
-func (rf *Raft) heartbeats() {
-	for !rf.killed() {
-
-		rf.mu.RLock()
-		if rf.role == LEADER {
-			rf.mu.RUnlock()
-			rf.BroadCastHeartBeat(true)
-		} else {
-			rf.mu.RUnlock()
-		}
-		<-rf.heartBeatTimer.C
-		rf.HeartBeatTimerReset()
-	}
-}
-
 //
 // example RequestVote RPC handler.
 //
-func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
-	DPrintf("%d## reply to %d : RequestVote开始", rf.me, args.CandidateId)
-	defer DPrintf("%d## reply to %d : RequestVote结束", rf.me, args.CandidateId)
-
-	start := time.Now()
-	rf.mu.Lock()
-	TPrintf("%d## : RequestVote 抢到锁花费时间=%v", rf.me, time.Since(start).Milliseconds())
-	defer rf.mu.Unlock()
-
-	if rf.currentTerm > args.Term {
-		reply.VoteGranted, reply.Term = 0, rf.currentTerm
-		return
-	}
-
-	if args.Term > rf.currentTerm {
-		rf.ChangeToFollower(args.Term)
-	}
-
-	if (rf.voteFor == -1 || rf.voteFor == args.CandidateId) && !rf.isUpToDate(args) {
-		// 未投票且log不比人家新
-		rf.role = FOLLOWER
-		rf.voteFor = args.CandidateId
-		reply.VoteGranted = 1
-		rf.ElectionTimerReset()
-	}
-
-	reply.Term = rf.currentTerm
-	rf.persist()
-}
 
 /*
 1. 来自以往任期的信息不做处理     ：直接回复currentTerm
@@ -365,56 +321,43 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 	reply.Term = rf.currentTerm
 }
 
-/*
-截断？不能直接截断本地Log，网络会导致RPC乱序，可以更长的Entries（User command发送的晚）反而会先到达， 其返回后会更新nextLogIndex为一个大值，
-此时短的Entries（User command发送的早），会造成command被覆盖
-*/
-func (rf *Raft) updateLocalLog(args *AppendEntriesArgs) {
-	lastIndex := rf.lastEntry().Index
-	firstIndex := rf.firstEntry().Index
-	if lastIndex > args.PrevLogIndex+len(args.Entries) {
-		i := 0
-		for i < len(args.Entries) && rf.log[args.PrevLogIndex-firstIndex+1+i].Term == args.Entries[i].Term {
-			i++
-		}
-		if i == len(args.Entries) {
-			return
-		}
+func (rf *Raft) AppendEntriesReplyHandler(peer int, arg *AppendEntriesArgs, reply *AppendEntriesReply) {
+	if reply.Term > rf.currentTerm {
+		rf.ElectionTimerReset()
+		rf.ChangeToFollower(reply.Term)
+		rf.persist()
+		return
 	}
-	rf.log = copyLog(rf.log[0 : args.PrevLogIndex-firstIndex+1])
-	rf.log = append(rf.log, args.Entries...)
-	rf.persist()
-}
-
-func (rf *Raft) needSendEntries(peer int) bool {
-	rf.mu.RLock()
-	defer rf.mu.RUnlock()
-	return rf.role == LEADER && rf.matchIndex[peer] < rf.lastEntry().Index
-}
-
-func (rf *Raft) genSnapshotArg() *InstallSnapshotArg {
-	return &InstallSnapshotArg{Term: rf.currentTerm,
-		Snapshot:          rf.persister.snapshot,
-		LastIncludedIndex: rf.firstEntry().Index,
-		LastIncludedTerm:  rf.firstEntry().Term}
-}
-
-func (rf *Raft) genAppendArg(preLogIndex int) *AppendEntriesArgs {
-	entries := DeepCopyEntries(rf.log[preLogIndex-rf.firstEntry().Index+1:])
-	return &AppendEntriesArgs{rf.currentTerm, rf.me, preLogIndex,
-		rf.log[preLogIndex-rf.firstEntry().Index].Term, entries, rf.commitIndex}
-}
-
-func (rf *Raft) replicator(peer int) {
-	rf.replicatorCV[peer].L.Lock()
-	defer rf.replicatorCV[peer].L.Unlock()
-
-	for !rf.killed() {
-		for !rf.needSendEntries(peer) {
-			rf.replicatorCV[peer].Wait()
-		}
-		rf.replicateOneRound(peer)
+	// 需要检查收到回复时，自己还是否是leader; 或者任期发生了改变
+	if rf.role != LEADER || rf.currentTerm != arg.Term {
+		return
 	}
+
+	if reply.Success {
+		nextIndex, matchIndex := arg.PrevLogIndex+1+len(arg.Entries), arg.PrevLogIndex+len(arg.Entries)
+
+		rf.nextIndex[peer], rf.matchIndex[peer] = max(nextIndex, rf.nextIndex[peer]), max(matchIndex, rf.matchIndex[peer])
+		if rf.majorityAgree(matchIndex) && len(arg.Entries) > 0 && rf.currentTerm == arg.Entries[len(arg.Entries)-1].Term {
+			rf.commitIndex = matchIndex
+			if rf.lastApplied < rf.commitIndex {
+				// 大部分服务器同步成功，并且还存在未apply的条目
+				rf.applyCv.Signal() // 唤醒，提交commit
+			}
+		}
+	} else {
+		rf.nextIndex[peer] = reply.ConflictIndex
+	}
+}
+
+func (rf *Raft) InstallSnapshotReplyHandler(peer int, arg *InstallSnapshotArg, reply *InstallSnapshotReply) {
+	if reply.Term > rf.currentTerm {
+		rf.ElectionTimerReset()
+		rf.ChangeToFollower(reply.Term)
+		rf.persist()
+		return
+	}
+	rf.matchIndex[peer] = arg.LastIncludedIndex
+	rf.nextIndex[peer] = rf.matchIndex[peer] + 1
 }
 
 func (rf *Raft) replicateOneRound(peer int) {
@@ -432,6 +375,8 @@ func (rf *Raft) replicateOneRound(peer int) {
 			rf.mu.Lock()
 			rf.InstallSnapshotReplyHandler(peer, arg, reply)
 			rf.mu.Unlock()
+		} else {
+			time.Sleep(10 * time.Millisecond)
 		}
 	} else {
 		// send entries
@@ -441,9 +386,22 @@ func (rf *Raft) replicateOneRound(peer int) {
 			rf.mu.Lock()
 			rf.AppendEntriesReplyHandler(peer, arg, reply)
 			rf.mu.Unlock()
+		} else {
+			time.Sleep(10 * time.Millisecond)
 		}
 	}
+}
 
+func (rf *Raft) replicator(peer int) {
+	rf.replicatorCV[peer].L.Lock()
+	defer rf.replicatorCV[peer].L.Unlock()
+
+	for !rf.killed() {
+		for !rf.needSendEntries(peer) {
+			rf.replicatorCV[peer].Wait()
+		}
+		rf.replicateOneRound(peer)
+	}
 }
 
 func (rf *Raft) BroadCastHeartBeat(isHeartBeat bool) {
@@ -460,62 +418,44 @@ func (rf *Raft) BroadCastHeartBeat(isHeartBeat bool) {
 	}
 }
 
-func (rf *Raft) majorityAgree(matchIndex int) bool {
-	num := 1
-	for peer := range rf.peers {
-		if peer != rf.me && rf.matchIndex[peer] == matchIndex {
-			num++
-		}
-	}
-	return num > len(rf.peers)/2
-}
+func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
+	DPrintf("%d## reply to %d : RequestVote开始", rf.me, args.CandidateId)
+	defer DPrintf("%d## reply to %d : RequestVote结束", rf.me, args.CandidateId)
 
-func (rf *Raft) AppendEntriesReplyHandler(peer int, arg *AppendEntriesArgs, reply *AppendEntriesReply) {
-	if reply.Term > rf.currentTerm {
+	start := time.Now()
+	rf.mu.Lock()
+	TPrintf("%d## : RequestVote 抢到锁花费时间=%v", rf.me, time.Since(start).Milliseconds())
+	defer rf.mu.Unlock()
+
+	if rf.currentTerm > args.Term {
+		reply.VoteGranted, reply.Term = 0, rf.currentTerm
+		SPrintf("%d##reply to %d : 不给你票, because myTerm=%d, argTerm=%d", rf.me, args.CandidateId, rf.currentTerm, args.Term)
+		return
+	}
+
+	if args.Term > rf.currentTerm {
+		rf.ChangeToFollower(args.Term)
+	}
+
+	if (rf.voteFor == -1 || rf.voteFor == args.CandidateId) && !rf.isUpToDate(args) {
+		// 未投票且log不比人家新
+		rf.role = FOLLOWER
+		rf.voteFor = args.CandidateId
+		reply.VoteGranted = 1
 		rf.ElectionTimerReset()
-		rf.ChangeToFollower(reply.Term)
-		rf.persist()
-		return
-	}
-	// 需要检查收到回复时，自己还是否是leader; 或者任期发生了改变
-	if rf.role != LEADER || rf.currentTerm != arg.Term {
-		return
-	}
-
-	if reply.Success {
-		nextIndex, matchIndex := arg.PrevLogIndex+1+len(arg.Entries), arg.PrevLogIndex+len(arg.Entries)
-
-		rf.nextIndex[peer], rf.matchIndex[peer] = max(nextIndex, rf.nextIndex[peer]), max(matchIndex, rf.matchIndex[peer])
-		if rf.majorityAgree(matchIndex) && len(arg.Entries) > 0 {
-			rf.commitIndex = matchIndex
-			if rf.lastApplied < rf.commitIndex &&
-				rf.currentTerm == arg.Entries[len(arg.Entries)-1].Term {
-				// 大部分服务器同步成功，并且还存在未apply的条目
-				rf.applyCv.Signal() // 唤醒，提交commit
-			}
-		}
+		SPrintf("%d##reply to %d :term=%d, 就给你票, myVote=%d, mylastEntry is {term=%d, index=%d}, {argTerm=%d, argIndex=%d}", rf.me, args.CandidateId, args.Term, rf.voteFor, rf.lastEntry().Term, rf.lastEntry().Index, args.LastLogTerm, args.LastLogIndex)
 	} else {
-		rf.nextIndex[peer] = reply.ConflictIndex
+		SPrintf("%d##reply to %d :term=%d, 不给你票, myVote=%d, mylastEntry is {term=%d, index=%d}, {argTerm=%d, argIndex=%d}", rf.me, args.CandidateId, args.Term, rf.voteFor, rf.lastEntry().Term, rf.lastEntry().Index, args.LastLogTerm, args.LastLogIndex)
 	}
-
-}
-
-func (rf *Raft) InstallSnapshotReplyHandler(peer int, arg *InstallSnapshotArg, reply *InstallSnapshotReply) {
-	if reply.Term > rf.currentTerm {
-		rf.ElectionTimerReset()
-		rf.ChangeToFollower(reply.Term)
-		rf.persist()
-		return
-	}
-	rf.matchIndex[peer] = arg.LastIncludedIndex
-	rf.nextIndex[peer] = rf.matchIndex[peer] + 1
+	reply.Term = rf.currentTerm
+	rf.persist()
 }
 
 func (rf *Raft) startElection() {
 	rf.ChangeToCandidate()
 	rf.ElectionTimerReset()
-	DPrintf("%d## : 选举开始, currentTerm = %d", rf.me, rf.currentTerm)
-	defer DPrintf("%d## : 选举结束, currentTerm = %d", rf.me, rf.currentTerm)
+	SPrintf("%d## : 选举开始, currentTerm = %d", rf.me, rf.currentTerm)
+	// defer SPrintf("%d## : 选举结束, currentTerm = %d", rf.me, rf.currentTerm)
 
 	myInfo := RequestVoteArgs{Term: rf.currentTerm, CandidateId: rf.me, LastLogIndex: rf.lastEntry().Index, LastLogTerm: rf.lastEntry().Term}
 
@@ -526,8 +466,8 @@ func (rf *Raft) startElection() {
 			continue
 		}
 		go func(x int, myInfo RequestVoteArgs) { // 要传局部变量，否则race
-			DPrintf("%d## send to %d: 拉票开始", rf.me, x)
-			defer DPrintf("%d## send to %d : 拉票结束", rf.me, x)
+			SPrintf("%d## send to %d: 拉票开始", rf.me, x)
+			defer SPrintf("%d## send to %d : 拉票结束", rf.me, x)
 			reply := RequestVoteReply{}
 
 			if rf.peers[x].Call("Raft.RequestVote", &myInfo, &reply) {
@@ -535,8 +475,10 @@ func (rf *Raft) startElection() {
 				defer rf.mu.Unlock()
 
 				if reply.Term > rf.currentTerm {
+					SPrintf("%d## recv from %d: failed because myTerm=%d, replyTerm=%d", rf.me, x, rf.currentTerm, reply.Term)
 					rf.ChangeToFollower(reply.Term)
 					rf.persist()
+
 					return
 				}
 
@@ -544,61 +486,75 @@ func (rf *Raft) startElection() {
 					recvFrom = append(recvFrom, x)
 				}
 
+				SPrintf("%d## recv from %d: success got vote=%d, myTerm=%d replyTerm=%d", rf.me, x, reply.VoteGranted, rf.currentTerm, reply.Term)
 				numVotes += reply.VoteGranted
 				if numVotes > len(rf.peers)/2 && rf.role == CANDIDATE && rf.currentTerm == myInfo.Term {
-					CPrintf("%d## : 当选", rf.me)
+					SPrintf("%d## : 当选, votes from %v, Term=%d", rf.me, recvFrom, rf.currentTerm)
 					rf.ChangeToLeader()          // 内部停止选举计时器
 					rf.BroadCastHeartBeat(false) // 初始化nextIndex
+				} else if numVotes > len(rf.peers)/2 {
+					SPrintf("%d## : 票过期了? numVotes=%d, currentTerm=%d, myInfoTerm=%d", rf.me, numVotes, rf.currentTerm, myInfo.Term)
 				}
 			}
 		}(server, myInfo)
 	}
 }
 
-// 利用反射进行深拷贝
-func DeepCopyEntry(entry Entry) Entry {
-	newEntry := Entry{Term: entry.Term, Index: entry.Index}
-
-	// 直接复制 Value 字段
-	if entry.Command != nil {
-		// 使用反射获取实际值
-		value := reflect.ValueOf(entry.Command)
-
-		switch value.Kind() {
-		case reflect.Int:
-			// 对于 int 类型，直接赋值即可
-			newEntry.Command = value.Interface()
-		case reflect.Ptr:
-			// 对于指针类型，进行深拷贝
-			if !value.IsNil() {
-				newValue := reflect.New(value.Elem().Type()) // 创建新的实例
-				newValue.Elem().Set(value.Elem())            // 复制值
-				newEntry.Command = newValue.Interface()      // 赋值
-			}
-		case reflect.Slice:
-			// 对于切片类型，进行深拷贝
-			newSlice := reflect.MakeSlice(value.Type(), value.Len(), value.Cap())
-			reflect.Copy(newSlice, value)
-			newEntry.Command = newSlice.Interface()
-		case reflect.String:
-			// 对于字符串，直接赋值即可
-			newEntry.Command = value.Interface()
-		default:
-			// 处理其他类型
-			newEntry.Command = value.Interface()
+// The ticker go routine starts a new election if this peer hasn't received
+// heartsbeats recently.
+func (rf *Raft) ticker() {
+	for !rf.killed() {
+		for !time.Now().After(rf.getElectionTime()) {
+			time.Sleep(time.Until(rf.getElectionTime()))
 		}
-	}
 
-	return newEntry
+		rf.mu.Lock()
+		if rf.role != LEADER {
+			rf.startElection()
+		}
+		rf.mu.Unlock()
+	}
 }
 
-// DeepCopyEntries deep copies a slice of Entry structs.
-func DeepCopyEntries(entries []Entry) []Entry {
-	newEntries := make([]Entry, len(entries))
-	for i, entry := range entries {
-		newEntries[i] = DeepCopyEntry(entry)
+func (rf *Raft) heartbeats() {
+	for !rf.killed() {
+		for !time.Now().After(rf.getHeartBeatTime()) {
+			time.Sleep(time.Until(rf.getHeartBeatTime()))
+		}
+		rf.HeartBeatTimerReset()
+		rf.mu.RLock()
+		if rf.role == LEADER {
+			rf.mu.RUnlock()
+			rf.BroadCastHeartBeat(true)
+		} else {
+			rf.mu.RUnlock()
+		}
 	}
-	return newEntries
+}
+
+func (rf *Raft) ApplyToUser() {
+	for !rf.killed() {
+		rf.mu.Lock()
+		for !(rf.lastApplied < rf.commitIndex) {
+			rf.applyCv.Wait()
+		}
+		CPrintf("%d## : rf.lastApplied=%d, rf.commitIndex=%d", rf.me, rf.lastApplied, rf.commitIndex)
+		firstIndex, commitIndex, lastApplied := rf.firstEntry().Index, rf.commitIndex, rf.lastApplied
+		entries := make([]Entry, commitIndex-lastApplied)
+		copy(entries, rf.log[lastApplied-firstIndex+1:commitIndex-firstIndex+1])
+		rf.mu.Unlock()
+		for _, entry := range entries {
+			rf.applyCh <- ApplyMsg{
+				CommandValid: true,
+				Command:      entry.Command,
+				CommandIndex: entry.Index,
+			}
+		}
+		rf.mu.Lock()
+		// max: apply期间可能InstallSnapshot; commitIndex rather than rf.commitIndex in case of rf.commitIndex changed during apply
+		rf.lastApplied = max(rf.lastApplied, commitIndex)
+		rf.mu.Unlock()
+	}
 }
 
 //
@@ -632,49 +588,6 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 	return index, term, isLeader
 }
 
-// The ticker go routine starts a new election if this peer hasn't received
-// heartsbeats recently.
-func (rf *Raft) ticker() {
-	for !rf.killed() {
-		<-rf.electionTimer.C
-
-		rf.mu.Lock()
-		if rf.role != LEADER {
-			rf.startElection()
-		} else {
-			// unlikely trigger, just for debug
-			CPrintf("%d## : startElection, but i'm already a leader", rf.me)
-		}
-		rf.mu.Unlock()
-	}
-
-}
-
-func (rf *Raft) ApplyToUser() {
-	for !rf.killed() {
-		rf.mu.Lock()
-		for !(rf.lastApplied < rf.commitIndex) {
-			rf.applyCv.Wait()
-		}
-		CPrintf("%d## : rf.lastApplied=%d, rf.commitIndex=%d", rf.me, rf.lastApplied, rf.commitIndex)
-
-		rf.mu.Unlock()
-		for {
-			rf.mu.Lock()
-			if rf.lastApplied >= rf.commitIndex {
-				rf.mu.Unlock()
-				break
-			}
-
-			rf.lastApplied++
-			// CPrintf("%d## : rf.lastApplied=%d, rf.commitIndex=%d", rf.me, rf.lastApplied, rf.commitIndex)
-			msg := ApplyMsg{CommandValid: true, Command: rf.log[rf.lastApplied-rf.firstEntry().Index].Command, CommandIndex: rf.lastApplied}
-			rf.mu.Unlock()
-			rf.applyCh <- msg
-		}
-	}
-}
-
 //
 // the service or tester wants to create a Raft server. the ports
 // of all the Raft servers (including this one) are in peers[]. this
@@ -686,7 +599,6 @@ func (rf *Raft) ApplyToUser() {
 // Make() must return quickly, so it should start goroutines
 // for any long-running work.
 //
-
 func Make(peers []*labrpc.ClientEnd, me int,
 	persister *Persister, applyCh chan ApplyMsg) *Raft {
 	rf := &Raft{}
@@ -699,8 +611,8 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	rf.applyCh = applyCh
 	rf.applyCv = sync.NewCond(&rf.mu)
 
-	rf.electionTimer = time.NewTimer(rf.randomizedElectionTimeout())
-	rf.heartBeatTimer = time.NewTimer(heartBeatTimeout()) // 创建时就启动倒计时
+	rf.ElectionTimerReset()
+	rf.HeartBeatTimerReset()
 
 	rf.dead = 0
 	rf.currentTerm = 0
@@ -756,26 +668,15 @@ func (rf *Raft) initReplicator() {
 }
 
 func (rf *Raft) randomizedElectionTimeout() time.Duration {
-	return time.Duration(time.Duration(220+rf.me*5+rand.Intn(200)) * time.Millisecond)
-}
-
-func heartBeatTimeout() time.Duration {
-	return time.Duration(150 * time.Millisecond)
+	return time.Duration(120+rand.Intn(150)) * time.Millisecond
 }
 
 func (rf *Raft) ChangeToFollower(Term int) {
 	rf.currentTerm = Term
 	rf.role = FOLLOWER
 	rf.voteFor = -1
-	rf.StopHeartBeat()
-}
-
-func (rf *Raft) StopHeartBeat() {
-	if !rf.heartBeatTimer.Stop() {
-		select {
-		case <-rf.heartBeatTimer.C:
-		default:
-		}
+	if rf.role == LEADER {
+		rf.ElectionTimerReset()
 	}
 }
 
@@ -788,37 +689,26 @@ func (rf *Raft) ChangeToCandidate() {
 
 func (rf *Raft) ChangeToLeader() {
 	rf.role = LEADER
-	if !rf.electionTimer.Stop() {
-		select {
-		case <-rf.electionTimer.C:
-		default:
-		}
-	}
-	rf.HeartBeatTimerReset()
 	for server := range rf.peers {
 		rf.nextIndex[server] = rf.lastEntry().Index + 1
 		rf.matchIndex[server] = 0
 	}
 }
 
-func (rf *Raft) ElectionTimerReset() {
-	if !rf.electionTimer.Stop() {
-		select {
-		case <-rf.electionTimer.C:
-		default:
-		}
-	}
-	rf.electionTimer.Reset(rf.randomizedElectionTimeout())
+func (rf *Raft) HeartBeatTimerReset() {
+	rf.heartBeatTime.Store(time.Now().Add(50 * time.Millisecond))
 }
 
-func (rf *Raft) HeartBeatTimerReset() {
-	if !rf.heartBeatTimer.Stop() {
-		select {
-		case <-rf.heartBeatTimer.C:
-		default:
-		}
-	}
-	rf.heartBeatTimer.Reset(heartBeatTimeout())
+func (rf *Raft) getHeartBeatTime() time.Time {
+	return rf.heartBeatTime.Load().(time.Time)
+}
+
+func (rf *Raft) ElectionTimerReset() {
+	rf.electionTime.Store(time.Now().Add(rf.randomizedElectionTimeout()))
+}
+
+func (rf *Raft) getElectionTime() time.Time {
+	return rf.electionTime.Load().(time.Time)
 }
 
 func min(a int, b int) int {
@@ -848,12 +738,104 @@ func (rf *Raft) isUpToDate(args *RequestVoteArgs) bool {
 		(rf.lastEntry().Term == args.LastLogTerm && rf.lastEntry().Index > args.LastLogIndex)
 }
 
-func (rf *Raft) isOutDate(args *RequestVoteArgs) bool {
-	return rf.lastEntry().Term < args.LastLogTerm ||
-		(rf.lastEntry().Term == args.LastLogTerm && rf.lastEntry().Index < args.LastLogIndex)
-}
 func copyLog(arg []Entry) []Entry {
 	Log := make([]Entry, len(arg))
 	copy(Log, arg)
 	return Log
+}
+
+/*
+截断？不能直接截断本地Log，网络会导致RPC乱序，可以更长的Entries（User command发送的晚）反而会先到达， 其返回后会更新nextLogIndex为一个大值，
+此时短的Entries（User command发送的早），会造成command被覆盖
+*/
+func (rf *Raft) updateLocalLog(args *AppendEntriesArgs) {
+	lastIndex := rf.lastEntry().Index
+	firstIndex := rf.firstEntry().Index
+	if lastIndex > args.PrevLogIndex+len(args.Entries) {
+		i := 0
+		for i < len(args.Entries) && rf.log[args.PrevLogIndex-firstIndex+1+i].Term == args.Entries[i].Term {
+			i++
+		}
+		if i == len(args.Entries) {
+			return
+		}
+	}
+	rf.log = copyLog(rf.log[0 : args.PrevLogIndex-firstIndex+1])
+	rf.log = append(rf.log, args.Entries...)
+	rf.persist()
+}
+
+func (rf *Raft) needSendEntries(peer int) bool {
+	rf.mu.RLock()
+	defer rf.mu.RUnlock()
+	return rf.role == LEADER && rf.matchIndex[peer] < rf.lastEntry().Index
+}
+
+func (rf *Raft) genSnapshotArg() *InstallSnapshotArg {
+	return &InstallSnapshotArg{Term: rf.currentTerm,
+		Snapshot:          rf.persister.snapshot,
+		LastIncludedIndex: rf.firstEntry().Index,
+		LastIncludedTerm:  rf.firstEntry().Term}
+}
+
+func (rf *Raft) genAppendArg(preLogIndex int) *AppendEntriesArgs {
+	entries := DeepCopyEntries(rf.log[preLogIndex-rf.firstEntry().Index+1:])
+	return &AppendEntriesArgs{rf.currentTerm, rf.me, preLogIndex,
+		rf.log[preLogIndex-rf.firstEntry().Index].Term, entries, rf.commitIndex}
+}
+
+// 利用反射进行深拷贝
+func DeepCopyEntry(entry Entry) Entry {
+	newEntry := Entry{Term: entry.Term, Index: entry.Index}
+
+	// 直接复制 Value 字段
+	if entry.Command != nil {
+		// 使用反射获取实际值
+		value := reflect.ValueOf(entry.Command)
+
+		switch value.Kind() {
+		case reflect.Int:
+			// 对于 int 类型，直接赋值即可
+			newEntry.Command = value.Interface()
+		case reflect.Ptr:
+			// 对于指针类型，进行深拷贝
+			if !value.IsNil() {
+				newValue := reflect.New(value.Elem().Type()) // 创建新的实例
+				newValue.Elem().Set(value.Elem())            // 复制值
+				newEntry.Command = newValue.Interface()      // 赋值
+			}
+		case reflect.Slice:
+			// 对于切片类型，进行深拷贝
+			newSlice := reflect.MakeSlice(value.Type(), value.Len(), value.Cap())
+			reflect.Copy(newSlice, value)
+			newEntry.Command = newSlice.Interface()
+		case reflect.String:
+			// 对于字符串，直接赋值即可
+			newEntry.Command = value.Interface()
+		default:
+			// 处理其他类型
+			newEntry.Command = value.Interface()
+		}
+	}
+
+	return newEntry
+}
+
+// DeepCopyEntries deep copies a slice of Entry structs.
+func DeepCopyEntries(entries []Entry) []Entry {
+	newEntries := make([]Entry, len(entries))
+	for i, entry := range entries {
+		newEntries[i] = DeepCopyEntry(entry)
+	}
+	return newEntries
+}
+
+func (rf *Raft) majorityAgree(matchIndex int) bool {
+	num := 1
+	for peer := range rf.peers {
+		if peer != rf.me && rf.matchIndex[peer] == matchIndex {
+			num++
+		}
+	}
+	return num > len(rf.peers)/2
 }

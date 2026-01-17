@@ -1,0 +1,206 @@
+2024/09/06 20:40:18 4##reply to 3 :term=199, 不给你票, myVote=-1, mylastEntry is {term=120, index=669}, {argTerm=28, argIndex=123}
+2024/09/06 20:40:18 4## : 选举开始, currentTerm = 200
+2024/09/06 20:40:18 4## send to 3: 拉票开始
+2024/09/06 20:40:18 4## send to 0: 拉票开始
+2024/09/06 20:40:18 4## send to 2: 拉票开始
+2024/09/06 20:40:18 4## send to 1: 拉票开始
+2024/09/06 20:40:18 4## send to 2 : 拉票结束
+2024/09/06 20:40:18 4##reply to 0 :term=200, 不给你票, myVote=4, mylastEntry is {term=120, index=669}, {argTerm=177, argIndex=463}
+2024/09/06 20:40:19 4## : 选举开始, currentTerm = 201
+2024/09/06 20:40:19 4## send to 1: 拉票开始
+2024/09/06 20:40:19 4## send to 0: 拉票开始
+2024/09/06 20:40:19 4## send to 2: 拉票开始
+2024/09/06 20:40:19 4## send to 3: 拉票开始
+2024/09/06 20:40:19 4## recv from 3: success got vote=1, myTerm=201 replyTerm=200
+2024/09/06 20:40:19 4## send to 3 : 拉票结束
+2024/09/06 20:40:19 4##reply to 0 :term=201, 不给你票, myVote=4, mylastEntry is {term=120, index=669}, {argTerm=177, argIndex=463}
+2024/09/06 20:40:19 4## send to 3 : 拉票结束
+2024/09/06 20:40:19 4##reply to 3 :term=201, 不给你票, myVote=4, mylastEntry is {term=120, index=669}, {argTerm=28, argIndex=123}
+2024/09/06 20:40:19 4## send to 0 : 拉票结束
+2024/09/06 20:40:19 4## recv from 2: success got vote=1, myTerm=201 replyTerm=201
+2024/09/06 20:40:19 4## send to 2 : 拉票结束
+2024/09/06 20:40:19 4##reply to 1 :term=202, 就给你票, myVote=1, mylastEntry is {term=120, index=669}, {argTerm=187, argIndex=661}
+2024/09/06 20:40:19 4## recv from 1: success got vote=0, myTerm=202 replyTerm=200
+2024/09/06 20:40:19 4## send to 1 : 拉票结束
+2024/09/06 20:40:20 4## recv from 0: success got vote=0, myTerm=202 replyTerm=200
+2024/09/06 20:40:20 4## send to 0 : 拉票结束
+2024/09/06 20:40:20 4## recv from 1: success got vote=0, myTerm=202 replyTerm=201
+2024/09/06 20:40:20 4## send to 1 : 拉票结束
+2024/09/06 20:40:20 4## : 选举开始, currentTerm = 203
+2024/09/06 20:40:20 4## send to 1: 拉票开始
+2024/09/06 20:40:20 4## send to 2: 拉票开始
+2024/09/06 20:40:20 4## send to 3: 拉票开始
+2024/09/06 20:40:20 4## send to 0: 拉票开始
+2024/09/06 20:40:20 4## send to 0 : 拉票结束
+2024/09/06 20:40:20 4## send to 2 : 拉票结束
+2024/09/06 20:40:20 4## send to 3 : 拉票结束
+2024/09/06 20:40:20 4##reply to 1 :term=204, 就给你票, myVote=1, mylastEntry is {term=187, index=661}, {argTerm=202, argIndex=662}
+2024/09/06 20:40:21 4## : 选举开始, currentTerm = 205
+2024/09/06 20:40:21 4## send to 0: 拉票开始
+2024/09/06 20:40:21 4## recv from 1: success got vote=0, myTerm=205 replyTerm=203
+2024/09/06 20:40:21 4## send to 3: 拉票开始
+2024/09/06 20:40:21 4## send to 2: 拉票开始
+2024/09/06 20:40:21 4## send to 1: 拉票开始
+2024/09/06 20:40:21 4## send to 1 : 拉票结束
+2024/09/06 20:40:21 4## recv from 2: success got vote=0, myTerm=205 replyTerm=205
+2024/09/06 20:40:21 4## send to 2 : 拉票结束
+2024/09/06 20:40:21 4##reply to 0 : 不给你票, because myTerm=205, argTerm=203
+2024/09/06 20:40:21 4## recv from 1: success got vote=0, myTerm=205 replyTerm=205
+2024/09/06 20:40:21 4## send to 1 : 拉票结束
+2024/09/06 20:40:21 4##reply to 1 :term=205, 不给你票, myVote=4, mylastEntry is {term=187, index=661}, {argTerm=202, argIndex=662}
+2024/09/06 20:40:21 4## recv from 3: success got vote=0, myTerm=205 replyTerm=205
+2024/09/06 20:40:21 4## send to 3 : 拉票结束
+2024/09/06 20:40:21 4## : 选举开始, currentTerm = 206
+2024/09/06 20:40:21 4## send to 2: 拉票开始
+2024/09/06 20:40:21 4## send to 1: 拉票开始
+2024/09/06 20:40:21 4## send to 0: 拉票开始
+2024/09/06 20:40:21 4## send to 3: 拉票开始
+2024/09/06 20:40:21 4## send to 2 : 拉票结束
+2024/09/06 20:40:21 4## send to 1 : 拉票结束
+2024/09/06 20:40:21 4## send to 0 : 拉票结束
+2024/09/06 20:40:21 4##reply to 0 :term=206, 不给你票, myVote=4, mylastEntry is {term=187, index=661}, {argTerm=177, argIndex=463}
+2024/09/06 20:40:21 4##reply to 1 :term=206, 不给你票, myVote=4, mylastEntry is {term=187, index=661}, {argTerm=202, argIndex=662}
+2024/09/06 20:40:21 4##reply to 1 :term=207, 就给你票, myVote=1, mylastEntry is {term=187, index=661}, {argTerm=202, argIndex=662}
+2024/09/06 20:40:21 4## recv from 3: success got vote=1, myTerm=207 replyTerm=206
+2024/09/06 20:40:21 4## send to 3 : 拉票结束
+2024/09/06 20:40:21 4##reply to 1 :term=208, 就给你票, myVote=1, mylastEntry is {term=187, index=661}, {argTerm=202, argIndex=662}
+2024/09/06 20:40:21 4##reply to 2 :term=208, 不给你票, myVote=1, mylastEntry is {term=187, index=661}, {argTerm=202, argIndex=662}
+2024/09/06 20:40:21 4## : 选举开始, currentTerm = 209
+2024/09/06 20:40:21 4## send to 0: 拉票开始
+2024/09/06 20:40:21 4## send to 3: 拉票开始
+2024/09/06 20:40:21 4## send to 1: 拉票开始
+2024/09/06 20:40:21 4## send to 2: 拉票开始
+2024/09/06 20:40:21 4##reply to 3 :term=209, 不给你票, myVote=4, mylastEntry is {term=187, index=661}, {argTerm=187, argIndex=661}
+2024/09/06 20:40:21 4##reply to 1 :term=209, 不给你票, myVote=4, mylastEntry is {term=187, index=661}, {argTerm=202, argIndex=662}
+2024/09/06 20:40:21 4## send to 3 : 拉票结束
+2024/09/06 20:40:22 4## : 选举开始, currentTerm = 210
+2024/09/06 20:40:22 4## send to 0: 拉票开始
+2024/09/06 20:40:22 4## send to 3: 拉票开始
+2024/09/06 20:40:22 4## send to 1: 拉票开始
+2024/09/06 20:40:22 4## send to 2: 拉票开始
+2024/09/06 20:40:22 4## send to 3 : 拉票结束
+2024/09/06 20:40:22 4## send to 0 : 拉票结束
+2024/09/06 20:40:22 4## recv from 0: success got vote=0, myTerm=210 replyTerm=209
+2024/09/06 20:40:22 4## send to 0 : 拉票结束
+2024/09/06 20:40:22 4##reply to 1 :term=211, 就给你票, myVote=1, mylastEntry is {term=187, index=661}, {argTerm=202, argIndex=662}
+2024/09/06 20:40:22 4## recv from 0: success got vote=1, myTerm=211 replyTerm=205
+2024/09/06 20:40:22 4## send to 0 : 拉票结束
+2024/09/06 20:40:22 4##reply to 2 :term=211, 不给你票, myVote=1, mylastEntry is {term=187, index=661}, {argTerm=202, argIndex=662}
+2024/09/06 20:40:22 4## recv from 2: success got vote=0, myTerm=211 replyTerm=209
+2024/09/06 20:40:22 4## send to 2 : 拉票结束
+2024/09/06 20:40:22 4## recv from 1: success got vote=0, myTerm=211 replyTerm=209
+2024/09/06 20:40:22 4## send to 1 : 拉票结束
+2024/09/06 20:40:22 4##reply to 1 :term=212, 就给你票, myVote=1, mylastEntry is {term=187, index=661}, {argTerm=202, argIndex=662}
+2024/09/06 20:40:22 4##reply to 3 :term=212, 不给你票, myVote=1, mylastEntry is {term=187, index=661}, {argTerm=187, argIndex=661}
+2024/09/06 20:40:22 4##reply to 1 :term=213, 就给你票, myVote=1, mylastEntry is {term=187, index=661}, {argTerm=202, argIndex=662}
+2024/09/06 20:40:22 4##reply to 0 :term=213, 不给你票, myVote=1, mylastEntry is {term=187, index=661}, {argTerm=177, argIndex=463}
+2024/09/06 20:40:22 4## : 选举开始, currentTerm = 214
+2024/09/06 20:40:22 4## send to 3: 拉票开始
+2024/09/06 20:40:22 4## send to 0: 拉票开始
+2024/09/06 20:40:22 4## send to 2: 拉票开始
+2024/09/06 20:40:22 4## send to 1: 拉票开始
+2024/09/06 20:40:22 4##reply to 3 :term=214, 不给你票, myVote=4, mylastEntry is {term=187, index=661}, {argTerm=187, argIndex=661}
+2024/09/06 20:40:22 4##reply to 1 :term=214, 不给你票, myVote=4, mylastEntry is {term=187, index=661}, {argTerm=202, argIndex=662}
+2024/09/06 20:40:22 4## send to 2 : 拉票结束
+2024/09/06 20:40:22 4## recv from 3: success got vote=0, myTerm=214 replyTerm=214
+2024/09/06 20:40:22 4## send to 3 : 拉票结束
+2024/09/06 20:40:23 4## recv from 1: success got vote=0, myTerm=214 replyTerm=210
+2024/09/06 20:40:23 4## send to 1 : 拉票结束
+2024/09/06 20:40:23 4##reply to 3 :term=215, 就给你票, myVote=3, mylastEntry is {term=187, index=661}, {argTerm=187, argIndex=661}
+2024/09/06 20:40:23 4##reply to 2 :term=215, 不给你票, myVote=3, mylastEntry is {term=187, index=661}, {argTerm=202, argIndex=662}
+2024/09/06 20:40:23 4## recv from 2: success got vote=0, myTerm=215 replyTerm=210
+2024/09/06 20:40:23 4## send to 2 : 拉票结束
+2024/09/06 20:40:23 4##reply to 0 :term=216, 不给你票, myVote=-1, mylastEntry is {term=187, index=661}, {argTerm=177, argIndex=463}
+2024/09/06 20:40:23 4##reply to 1 :term=217, 就给你票, myVote=1, mylastEntry is {term=187, index=661}, {argTerm=202, argIndex=662}
+2024/09/06 20:40:23 4##reply to 3 :term=218, 就给你票, myVote=3, mylastEntry is {term=187, index=661}, {argTerm=187, argIndex=661}
+2024/09/06 20:40:23 4##reply to 1 :term=218, 不给你票, myVote=3, mylastEntry is {term=187, index=661}, {argTerm=202, argIndex=662}
+2024/09/06 20:40:23 4##reply to 2 :term=220, 就给你票, myVote=2, mylastEntry is {term=187, index=661}, {argTerm=202, argIndex=662}
+2024/09/06 20:40:24 4##reply to 2 :term=221, 就给你票, myVote=2, mylastEntry is {term=187, index=661}, {argTerm=202, argIndex=662}
+2024/09/06 20:40:24 4## recv from 0: success got vote=0, myTerm=221 replyTerm=214
+2024/09/06 20:40:24 4## send to 0 : 拉票结束
+2024/09/06 20:40:24 4##reply to 3 :term=222, 就给你票, myVote=3, mylastEntry is {term=187, index=661}, {argTerm=187, argIndex=661}
+2024/09/06 20:40:24 4## recv from 1: success got vote=0, myTerm=222 replyTerm=214
+2024/09/06 20:40:24 4## send to 1 : 拉票结束
+2024/09/06 20:40:24 4##reply to 2 :term=223, 就给你票, myVote=2, mylastEntry is {term=187, index=661}, {argTerm=202, argIndex=662}
+2024/09/06 20:40:24 4##reply to 1 :term=223, 不给你票, myVote=2, mylastEntry is {term=187, index=661}, {argTerm=202, argIndex=662}
+2024/09/06 20:40:25 4##reply to 0 :term=224, 不给你票, myVote=-1, mylastEntry is {term=223, index=663}, {argTerm=177, argIndex=463}
+2024/09/06 20:40:25 4##reply to 1 :term=225, 就给你票, myVote=1, mylastEntry is {term=223, index=663}, {argTerm=223, argIndex=663}
+2024/09/06 20:40:25 4##reply to 2 :term=225, 不给你票, myVote=1, mylastEntry is {term=223, index=663}, {argTerm=223, argIndex=663}
+2024/09/06 20:40:25 4##reply to 0 :term=225, 不给你票, myVote=1, mylastEntry is {term=223, index=663}, {argTerm=177, argIndex=463}
+2024/09/06 20:40:26 4##reply to 0 :term=226, 不给你票, myVote=-1, mylastEntry is {term=223, index=663}, {argTerm=177, argIndex=463}
+2024/09/06 20:40:26 4## : 选举开始, currentTerm = 227
+2024/09/06 20:40:26 4## send to 0: 拉票开始
+2024/09/06 20:40:26 4## send to 1: 拉票开始
+2024/09/06 20:40:26 4## send to 2: 拉票开始
+2024/09/06 20:40:26 4## send to 3: 拉票开始
+2024/09/06 20:40:26 4##reply to 0 :term=228, 不给你票, myVote=-1, mylastEntry is {term=223, index=663}, {argTerm=177, argIndex=463}
+2024/09/06 20:40:26 4## recv from 3: success got vote=0, myTerm=228 replyTerm=227
+2024/09/06 20:40:26 4## send to 3 : 拉票结束
+2024/09/06 20:40:26 4## recv from 2: success got vote=0, myTerm=228 replyTerm=227
+2024/09/06 20:40:26 4## send to 2 : 拉票结束
+2024/09/06 20:40:26 4##reply to 3 :term=229, 就给你票, myVote=3, mylastEntry is {term=223, index=663}, {argTerm=225, argIndex=664}
+2024/09/06 20:40:26 4##reply to 1 :term=229, 不给你票, myVote=3, mylastEntry is {term=223, index=663}, {argTerm=225, argIndex=664}
+2024/09/06 20:40:26 4## recv from 1: success got vote=0, myTerm=229 replyTerm=227
+2024/09/06 20:40:26 4## send to 1 : 拉票结束
+2024/09/06 20:40:27 4##reply to 0 :term=230, 不给你票, myVote=-1, mylastEntry is {term=223, index=663}, {argTerm=177, argIndex=463}
+2024/09/06 20:40:27 4##reply to 3 :term=231, 就给你票, myVote=3, mylastEntry is {term=223, index=663}, {argTerm=225, argIndex=664}
+2024/09/06 20:40:27 4##reply to 1 :term=231, 不给你票, myVote=3, mylastEntry is {term=223, index=663}, {argTerm=225, argIndex=664}
+2024/09/06 20:40:27 4## recv from 0: success got vote=0, myTerm=231 replyTerm=227
+2024/09/06 20:40:27 4## send to 0 : 拉票结束
+2024/09/06 20:40:27 4##reply to 3 :term=232, 就给你票, myVote=3, mylastEntry is {term=223, index=663}, {argTerm=225, argIndex=664}
+2024/09/06 20:40:27 4##reply to 0 :term=232, 不给你票, myVote=3, mylastEntry is {term=223, index=663}, {argTerm=177, argIndex=463}
+2024/09/06 20:40:27 4##reply to 2 :term=232, 不给你票, myVote=3, mylastEntry is {term=223, index=663}, {argTerm=225, argIndex=664}
+2024/09/06 20:40:27 4## : 选举开始, currentTerm = 233
+2024/09/06 20:40:27 4## send to 0: 拉票开始
+2024/09/06 20:40:27 4## send to 1: 拉票开始
+2024/09/06 20:40:27 4## send to 3: 拉票开始
+2024/09/06 20:40:27 4## send to 2: 拉票开始
+2024/09/06 20:40:27 4##reply to 0 :term=233, 不给你票, myVote=4, mylastEntry is {term=223, index=663}, {argTerm=177, argIndex=463}
+2024/09/06 20:40:27 4## send to 0 : 拉票结束
+2024/09/06 20:40:27 4## send to 2 : 拉票结束
+2024/09/06 20:40:27 4##reply to 1 :term=234, 就给你票, myVote=1, mylastEntry is {term=223, index=663}, {argTerm=225, argIndex=664}
+2024/09/06 20:40:27 4##reply to 3 :term=234, 不给你票, myVote=1, mylastEntry is {term=223, index=663}, {argTerm=225, argIndex=664}
+2024/09/06 20:40:27 4## recv from 1: success got vote=0, myTerm=234 replyTerm=234
+2024/09/06 20:40:27 4## send to 1 : 拉票结束
+2024/09/06 20:40:27 4## recv from 3: success got vote=0, myTerm=234 replyTerm=233
+2024/09/06 20:40:27 4## send to 3 : 拉票结束
+2024/09/06 20:40:27 4##reply to 1 :term=235, 就给你票, myVote=1, mylastEntry is {term=223, index=663}, {argTerm=225, argIndex=664}
+2024/09/06 20:40:28 4## : 选举开始, currentTerm = 236
+2024/09/06 20:40:28 4## send to 0: 拉票开始
+2024/09/06 20:40:28 4## send to 1: 拉票开始
+2024/09/06 20:40:28 4## send to 3: 拉票开始
+2024/09/06 20:40:28 4## send to 2: 拉票开始
+2024/09/06 20:40:28 4## recv from 1: success got vote=0, myTerm=236 replyTerm=236
+2024/09/06 20:40:28 4## send to 1 : 拉票结束
+2024/09/06 20:40:28 4## recv from 0: success got vote=1, myTerm=236 replyTerm=236
+2024/09/06 20:40:28 4## send to 0 : 拉票结束
+2024/09/06 20:40:28 4## : 选举开始, currentTerm = 237
+2024/09/06 20:40:28 4## send to 0: 拉票开始
+2024/09/06 20:40:28 4## send to 1: 拉票开始
+2024/09/06 20:40:28 4## send to 2: 拉票开始
+2024/09/06 20:40:28 4## send to 3: 拉票开始
+2024/09/06 20:40:28 4## recv from 3: success got vote=0, myTerm=237 replyTerm=237
+2024/09/06 20:40:28 4## send to 3 : 拉票结束
+2024/09/06 20:40:28 4## recv from 2: success got vote=0, myTerm=237 replyTerm=237
+2024/09/06 20:40:28 4## send to 2 : 拉票结束
+2024/09/06 20:40:28 4##reply to 2 :term=238, 就给你票, myVote=2, mylastEntry is {term=223, index=663}, {argTerm=225, argIndex=664}
+2024/09/06 20:40:28 4## recv from 3: success got vote=0, myTerm=238 replyTerm=236
+2024/09/06 20:40:28 4## send to 3 : 拉票结束
+2024/09/06 20:40:28 4## recv from 1: success got vote=0, myTerm=238 replyTerm=237
+2024/09/06 20:40:28 4## send to 1 : 拉票结束
+2024/09/06 20:40:28 4## recv from 2: success got vote=0, myTerm=238 replyTerm=236
+2024/09/06 20:40:28 4## send to 2 : 拉票结束
+2024/09/06 20:40:28 4##reply to 1 :term=239, 就给你票, myVote=1, mylastEntry is {term=238, index=665}, {argTerm=238, argIndex=665}
+2024/09/06 20:40:29 4##reply to 1 :term=240, 就给你票, myVote=1, mylastEntry is {term=238, index=665}, {argTerm=238, argIndex=665}
+2024/09/06 20:40:29 4##reply to 3 :term=241, 就给你票, myVote=3, mylastEntry is {term=238, index=665}, {argTerm=238, argIndex=665}
+2024/09/06 20:40:29 4## recv from 0: success got vote=0, myTerm=241 replyTerm=237
+2024/09/06 20:40:29 4## send to 0 : 拉票结束
+2024/09/06 20:40:29 4##reply to 1 :term=243, 就给你票, myVote=1, mylastEntry is {term=238, index=665}, {argTerm=238, argIndex=665}
+2024/09/06 20:40:29 4##reply to 1 :term=244, 就给你票, myVote=1, mylastEntry is {term=238, index=665}, {argTerm=238, argIndex=665}
+2024/09/06 20:40:29 4##reply to 3 :term=244, 不给你票, myVote=1, mylastEntry is {term=238, index=665}, {argTerm=238, argIndex=665}
+2024/09/06 20:40:30 4##reply to 2 :term=245, 就给你票, myVote=2, mylastEntry is {term=238, index=665}, {argTerm=238, argIndex=665}
+2024/09/06 20:40:30 4##reply to 3 :term=246, 就给你票, myVote=3, mylastEntry is {term=238, index=665}, {argTerm=238, argIndex=665}
+2024/09/06 20:40:30 4##reply to 0 :term=247, 不给你票, myVote=-1, mylastEntry is {term=238, index=665}, {argTerm=177, argIndex=463}
+2024/09/06 20:40:30 4##reply to 1 :term=248, 就给你票, myVote=1, mylastEntry is {term=238, index=665}, {argTerm=238, argIndex=665}
+2024/09/06 20:40:30 4##reply to 2 :term=248, 不给你票, myVote=1, mylastEntry is {term=238, index=665}, {argTerm=238, argIndex=665}
+2024/09/06 20:40:31 4##reply to 1 :term=249, 就给你票, myVote=1, mylastEntry is {term=238, index=665}, {argTerm=238, argIndex=665}

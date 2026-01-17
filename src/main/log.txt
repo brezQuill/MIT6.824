@@ -1,0 +1,38 @@
+*** Starting wc test.
+Register success, Id =  2
+Register success, Id =  1
+Register success, Id =  3
+--- wc test: PASS
+*** Starting indexer test.
+Register success, Id =  1
+Register success, Id =  2
+--- indexer test: PASS
+*** Starting map parallelism test.
+Register success, Id =  1
+Register success, Id =  2
+--- map parallelism test: PASS
+*** Starting reduce parallelism test.
+Register success, Id =  1
+Register success, Id =  2
+--- reduce parallelism test: PASS
+*** Starting job count test.
+Register success, Id =  1
+Register success, Id =  2
+--- job count test: PASS
+*** Starting early exit test.
+Register success, Id =  2
+Register success, Id =  1
+Register success, Id =  3
+--- early exit test: PASS
+*** Starting crash test.
+Register success, Id =  1
+Register success, Id =  2
+Register success, Id =  3
+Register success, Id =  4
+Register success, Id =  5
+Register success, Id =  6
+Register success, Id =  7
+Register success, Id =  8
+Register success, Id =  9
+--- crash test: PASS
+*** PASSED ALL TESTS

@@ -1,0 +1,10 @@
+1. heartbeats: rf.ElectionTimerReset() //从leader转为follower？？？？
+2. reply.Term > rf.currentTerm && rf.role == LEADER(两处)
+3. 心跳回复false接着处理,可能需要提高自身Term
+4. 收到回复的Term大于自己也别急于重置选举时间，先确认自己还是leader
+5. RequestVote中只需要一个persist（数量上差别不大，说明大多数Vote都是废的）
+6. 每个server的electionTimerOut由rf.me决定
+7. reply.OutDate = true // 告诉对方你过时了
+8. func (rf *Raft) ElectionTimerReset(postpone ...int)
+9. startElection中转变为Follower不再rf.StopHeartBeat()
+10. 开始选举时记录Term

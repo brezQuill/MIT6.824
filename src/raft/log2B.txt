@@ -1,0 +1,1406 @@
+Test (2B): rejoin of partitioned leader ...
+2024/09/02 16:00:50 0## : startElection开始
+2024/09/02 16:00:50 0## : 启动选举, Term = 0
+2024/09/02 16:00:50 0## : startElection结束
+2024/09/02 16:00:50 0## send to 1: RequestVote开始
+2024/09/02 16:00:50 0## send to 2: RequestVote开始
+2024/09/02 16:00:50 2## reply to 0 : RequestVote开始
+2024/09/02 16:00:50 2## reply to 0 : RequestVote结束
+2024/09/02 16:00:50 1## reply to 0 : RequestVote开始
+2024/09/02 16:00:50 1## reply to 0 : RequestVote结束
+2024/09/02 16:00:50 0## : 当选！, Term = 1
+2024/09/02 16:00:50 0## send to 2 : RequestVote结束
+2024/09/02 16:00:50 0##--Term=1 : sendAppendEntries开始
+2024/09/02 16:00:50 0## send to 1 : RequestVote结束
+2024/09/02 16:00:50 0##--Term=1 : sendAppendEntries结束
+2024/09/02 16:00:50 0## send to 2--Term=1 : sendAppend开始
+2024/09/02 16:00:50 0## send to 1--Term=1 : sendAppend开始
+2024/09/02 16:00:50 2## reply to 0 : AppendEntries开始
+2024/09/02 16:00:50 2## reply to 0 : AppendEntries结束
+2024/09/02 16:00:50 1## reply to 0 : AppendEntries开始
+2024/09/02 16:00:50 1## reply to 0 : AppendEntries结束
+2024/09/02 16:00:50 0## : nextIndex=[1 1 1], matchIndex=[0 0 0], commitIndex=0
+2024/09/02 16:00:50 0## send to 2--Term=1 : sendAppend结束
+2024/09/02 16:00:50 0## : nextIndex=[1 1 1], matchIndex=[0 0 0], commitIndex=0
+2024/09/02 16:00:50 0## send to 1--Term=1 : sendAppend结束
+2024/09/02 16:00:51 0##--Term=1 : sendAppendEntries开始
+2024/09/02 16:00:51 0##--Term=1 : sendAppendEntries结束
+2024/09/02 16:00:51 每个server提交的数目：[0 0 0]
+2024/09/02 16:00:51 cmd = 101, cmd1 = <nil>, nd = 0, index = 1
+2024/09/02 16:00:51 0## send to 2--Term=1 : sendAppend开始
+2024/09/02 16:00:51 0## send to 1--Term=1 : sendAppend开始
+2024/09/02 16:00:51 2## reply to 0 : AppendEntries开始
+2024/09/02 16:00:51 2## reply to 0 : AppendEntries结束
+2024/09/02 16:00:51 0## : nextIndex=[1 1 2], matchIndex=[0 0 1], commitIndex=0
+2024/09/02 16:00:51 0## send to 2--Term=1 : sendAppend结束
+2024/09/02 16:00:51 0## : rf.lastApplied=0, rf.commitIndex=1, len(log)=2
+2024/09/02 16:00:51 1## reply to 0 : AppendEntries开始
+2024/09/02 16:00:51 1## reply to 0 : AppendEntries结束
+2024/09/02 16:00:51 0## : nextIndex=[1 2 2], matchIndex=[0 1 1], commitIndex=1
+2024/09/02 16:00:51 0## send to 1--Term=1 : sendAppend结束
+2024/09/02 16:00:51 每个server提交的数目：[1 0 0]
+2024/09/02 16:00:51 cmd = 101, cmd1 = 101, nd = 1, index = 1
+2024/09/02 16:00:51 每个server提交的数目：[1 0 0]
+2024/09/02 16:00:51 cmd = 101, cmd1 = 101, nd = 1, index = 1
+2024/09/02 16:00:51 每个server提交的数目：[1 0 0]
+2024/09/02 16:00:51 cmd = 101, cmd1 = 101, nd = 1, index = 1
+2024/09/02 16:00:51 每个server提交的数目：[1 0 0]
+2024/09/02 16:00:51 cmd = 101, cmd1 = 101, nd = 1, index = 1
+2024/09/02 16:00:51 每个server提交的数目：[1 0 0]
+2024/09/02 16:00:51 cmd = 101, cmd1 = 101, nd = 1, index = 1
+2024/09/02 16:00:51 每个server提交的数目：[1 0 0]
+2024/09/02 16:00:51 cmd = 101, cmd1 = 101, nd = 1, index = 1
+2024/09/02 16:00:51 每个server提交的数目：[1 0 0]
+2024/09/02 16:00:51 cmd = 101, cmd1 = 101, nd = 1, index = 1
+2024/09/02 16:00:51 1## reply to 0 : AppendEntries开始
+2024/09/02 16:00:51 2## reply to 0 : AppendEntries开始
+2024/09/02 16:00:51 1## reply to 0 : AppendEntries结束
+2024/09/02 16:00:51 2## : rf.lastApplied=0, rf.commitIndex=1, len(log)=2
+2024/09/02 16:00:51 1## : rf.lastApplied=0, rf.commitIndex=1, len(log)=2
+2024/09/02 16:00:51 2## reply to 0 : AppendEntries结束
+2024/09/02 16:00:51 0## : 正常心跳
+2024/09/02 16:00:51 0## : 正常心跳
+2024/09/02 16:00:51 每个server提交的数目：[1 1 1]
+2024/09/02 16:00:51 cmd = 101, cmd1 = 101, nd = 3, index = 1
+2024/09/02 16:00:51 2## reply to 0 : AppendEntries开始
+2024/09/02 16:00:51 2## reply to 0 : AppendEntries结束
+2024/09/02 16:00:51 1## reply to 0 : AppendEntries开始
+2024/09/02 16:00:51 0## : 正常心跳
+2024/09/02 16:00:51 1## reply to 0 : AppendEntries结束
+2024/09/02 16:00:51 0## : 正常心跳
+2024/09/02 16:00:51 1## reply to 0 : AppendEntries开始
+2024/09/02 16:00:51 1## reply to 0 : AppendEntries结束
+2024/09/02 16:00:51 2## reply to 0 : AppendEntries开始
+2024/09/02 16:00:51 2## reply to 0 : AppendEntries结束
+2024/09/02 16:00:51 0## : 正常心跳
+2024/09/02 16:00:51 0## : 正常心跳
+2024/09/02 16:00:51 2## reply to 0 : AppendEntries开始
+2024/09/02 16:00:51 2## reply to 0 : AppendEntries结束
+2024/09/02 16:00:51 1## reply to 0 : AppendEntries开始
+2024/09/02 16:00:51 1## reply to 0 : AppendEntries结束
+2024/09/02 16:00:51 0## : 正常心跳
+2024/09/02 16:00:51 0## : 正常心跳
+2024/09/02 16:00:51 0##--Term=1 : sendAppendEntries开始
+2024/09/02 16:00:51 0##--Term=1 : sendAppendEntries结束
+2024/09/02 16:00:51 0## send to 1--Term=1 : sendAppend开始
+2024/09/02 16:00:51 0##--Term=1 : sendAppendEntries开始
+2024/09/02 16:00:51 0##--Term=1 : sendAppendEntries结束
+2024/09/02 16:00:51 0## send to 2--Term=1 : sendAppend开始
+2024/09/02 16:00:51 0## send to 1--Term=1 : sendAppend开始
+2024/09/02 16:00:51 0##--Term=1 : sendAppendEntries开始
+2024/09/02 16:00:51 0## send to 2--Term=1 : sendAppend开始
+2024/09/02 16:00:51 0## send to 1--Term=1 : sendAppend开始
+2024/09/02 16:00:51 0##--Term=1 : sendAppendEntries结束
+2024/09/02 16:00:51 0## send to 2--Term=1 : sendAppend开始
+2024/09/02 16:00:51 1## : startElection开始
+2024/09/02 16:00:51 1## : 启动选举, Term = 1
+2024/09/02 16:00:51 1## send to 0: RequestVote开始
+2024/09/02 16:00:51 1## : startElection结束
+2024/09/02 16:00:51 1## send to 2: RequestVote开始
+2024/09/02 16:00:51 2## reply to 1 : RequestVote开始
+2024/09/02 16:00:51 2## reply to 1 : RequestVote结束
+2024/09/02 16:00:51 1## : 当选！, Term = 2
+2024/09/02 16:00:51 1## send to 2 : RequestVote结束
+2024/09/02 16:00:51 1##--Term=2 : sendAppendEntries开始
+2024/09/02 16:00:51 1##--Term=2 : sendAppendEntries结束
+2024/09/02 16:00:51 1## send to 0--Term=2 : sendAppend开始
+2024/09/02 16:00:51 1## send to 2--Term=2 : sendAppend开始
+2024/09/02 16:00:51 2## reply to 1 : AppendEntries开始
+2024/09/02 16:00:51 2## reply to 1 : AppendEntries结束
+2024/09/02 16:00:51 1## : nextIndex=[2 2 2], matchIndex=[0 0 1], commitIndex=1
+2024/09/02 16:00:51 1## send to 2--Term=2 : sendAppend结束
+2024/09/02 16:00:51 1##--Term=2 : sendAppendEntries开始
+2024/09/02 16:00:51 1##--Term=2 : sendAppendEntries结束
+2024/09/02 16:00:51 每个server提交的数目：[1 1 1]
+2024/09/02 16:00:51 cmd = 103, cmd1 = <nil>, nd = 0, index = 2
+2024/09/02 16:00:51 1## send to 0--Term=2 : sendAppend开始
+2024/09/02 16:00:51 1## send to 2--Term=2 : sendAppend开始
+2024/09/02 16:00:51 2## reply to 1 : AppendEntries开始
+2024/09/02 16:00:51 2## reply to 1 : AppendEntries结束
+2024/09/02 16:00:51 1## : nextIndex=[2 2 3], matchIndex=[0 0 2], commitIndex=1
+2024/09/02 16:00:51 1## send to 2--Term=2 : sendAppend结束
+2024/09/02 16:00:51 1## : rf.lastApplied=1, rf.commitIndex=2, len(log)=3
+2024/09/02 16:00:51 每个server提交的数目：[1 2 1]
+2024/09/02 16:00:51 cmd = 103, cmd1 = 103, nd = 1, index = 2
+2024/09/02 16:00:51 每个server提交的数目：[1 2 1]
+2024/09/02 16:00:51 cmd = 103, cmd1 = 103, nd = 1, index = 2
+2024/09/02 16:00:51 每个server提交的数目：[1 2 1]
+2024/09/02 16:00:51 cmd = 103, cmd1 = 103, nd = 1, index = 2
+2024/09/02 16:00:51 每个server提交的数目：[1 2 1]
+2024/09/02 16:00:51 cmd = 103, cmd1 = 103, nd = 1, index = 2
+2024/09/02 16:00:51 每个server提交的数目：[1 2 1]
+2024/09/02 16:00:51 cmd = 103, cmd1 = 103, nd = 1, index = 2
+2024/09/02 16:00:51 每个server提交的数目：[1 2 1]
+2024/09/02 16:00:51 cmd = 103, cmd1 = 103, nd = 1, index = 2
+2024/09/02 16:00:51 每个server提交的数目：[1 2 1]
+2024/09/02 16:00:51 cmd = 103, cmd1 = 103, nd = 1, index = 2
+2024/09/02 16:00:51 2## reply to 1 : AppendEntries开始
+2024/09/02 16:00:51 2## reply to 1 : AppendEntries结束
+2024/09/02 16:00:51 2## : rf.lastApplied=1, rf.commitIndex=2, len(log)=3
+2024/09/02 16:00:51 1## : 正常心跳
+2024/09/02 16:00:52 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:52 cmd = 103, cmd1 = 103, nd = 2, index = 2
+2024/09/02 16:00:52 2## reply to 1 : AppendEntries开始
+2024/09/02 16:00:52 2## reply to 1 : AppendEntries结束
+2024/09/02 16:00:52 1## : 正常心跳
+2024/09/02 16:00:52 2## reply to 1 : AppendEntries开始
+2024/09/02 16:00:52 2## reply to 1 : AppendEntries结束
+2024/09/02 16:00:52 1## : 正常心跳
+2024/09/02 16:00:52 2## reply to 1 : AppendEntries开始
+2024/09/02 16:00:52 2## reply to 1 : AppendEntries结束
+2024/09/02 16:00:52 1## : 正常心跳
+2024/09/02 16:00:52 old leader: 0, new leader: 1
+2024/09/02 16:00:52 0##--Term=1 : sendAppendEntries开始
+2024/09/02 16:00:52 0##--Term=1 : sendAppendEntries结束
+2024/09/02 16:00:52 0## send to 2--Term=1 : sendAppend开始
+2024/09/02 16:00:52 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:52 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:52 0## send to 1--Term=1 : sendAppend开始
+2024/09/02 16:00:52 2## reply to 0 : AppendEntries开始
+2024/09/02 16:00:52 2## : old entries
+2024/09/02 16:00:52 2## reply to 0 : AppendEntries结束
+2024/09/02 16:00:52 0## send to 2--Term=1 : sendAppend结束
+2024/09/02 16:00:52 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:52 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:52 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:52 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:52 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:52 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:52 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:52 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:52 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:52 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:52 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:52 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:52 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:52 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:52 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:52 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:52 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:52 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:52 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:52 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:52 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:52 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:52 0## : startElection开始
+2024/09/02 16:00:52 0## : 启动选举, Term = 2
+2024/09/02 16:00:52 0## : startElection结束
+2024/09/02 16:00:52 0## send to 1: RequestVote开始
+2024/09/02 16:00:52 0## send to 2: RequestVote开始
+2024/09/02 16:00:52 2## reply to 0 : RequestVote开始
+2024/09/02 16:00:52 2## reply to 0 : RequestVote结束
+2024/09/02 16:00:52 0## send to 2 : RequestVote结束
+2024/09/02 16:00:52 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:52 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:52 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:52 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:52 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:52 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:52 2## : startElection开始
+2024/09/02 16:00:52 2## : 启动选举, Term = 2
+2024/09/02 16:00:52 2## : startElection结束
+2024/09/02 16:00:52 2## send to 1: RequestVote开始
+2024/09/02 16:00:52 2## send to 0: RequestVote开始
+2024/09/02 16:00:52 0## reply to 2 : RequestVote开始
+2024/09/02 16:00:52 0## : old vote
+2024/09/02 16:00:52 0## reply to 2 : RequestVote结束
+2024/09/02 16:00:52 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:52 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:52 2## send to 0 : RequestVote结束
+2024/09/02 16:00:52 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:52 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:52 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:52 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:52 0## send to 1 : RequestVote结束
+2024/09/02 16:00:52 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:52 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:52 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:52 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:52 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:52 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:52 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:52 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:52 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:52 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:52 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:52 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:52 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:52 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 0## : startElection开始
+2024/09/02 16:00:53 0## : 启动选举, Term = 3
+2024/09/02 16:00:53 0## : startElection结束
+2024/09/02 16:00:53 0## send to 2: RequestVote开始
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 0## send to 1: RequestVote开始
+2024/09/02 16:00:53 2## reply to 0 : RequestVote开始
+2024/09/02 16:00:53 2## reply to 0 : RequestVote结束
+2024/09/02 16:00:53 0## send to 2 : RequestVote结束
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 2## : startElection开始
+2024/09/02 16:00:53 2## : 启动选举, Term = 3
+2024/09/02 16:00:53 2## send to 0: RequestVote开始
+2024/09/02 16:00:53 2## : startElection结束
+2024/09/02 16:00:53 2## send to 1: RequestVote开始
+2024/09/02 16:00:53 0## reply to 2 : RequestVote开始
+2024/09/02 16:00:53 0## : old vote
+2024/09/02 16:00:53 0## reply to 2 : RequestVote结束
+2024/09/02 16:00:53 2## send to 0 : RequestVote结束
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 2## : startElection开始
+2024/09/02 16:00:53 2## : 启动选举, Term = 4
+2024/09/02 16:00:53 2## : startElection结束
+2024/09/02 16:00:53 2## send to 0: RequestVote开始
+2024/09/02 16:00:53 2## send to 1: RequestVote开始
+2024/09/02 16:00:53 0## reply to 2 : RequestVote开始
+2024/09/02 16:00:53 0## reply to 2 : RequestVote结束
+2024/09/02 16:00:53 2## send to 0 : RequestVote结束
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 0## : startElection开始
+2024/09/02 16:00:53 0## : 启动选举, Term = 4
+2024/09/02 16:00:53 0## : startElection结束
+2024/09/02 16:00:53 0## send to 2: RequestVote开始
+2024/09/02 16:00:53 0## send to 1: RequestVote开始
+2024/09/02 16:00:53 2## reply to 0 : RequestVote开始
+2024/09/02 16:00:53 2## : old vote
+2024/09/02 16:00:53 2## reply to 0 : RequestVote结束
+2024/09/02 16:00:53 0## send to 2 : RequestVote结束
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 0## : startElection开始
+2024/09/02 16:00:53 0## : 启动选举, Term = 5
+2024/09/02 16:00:53 0## : startElection结束
+2024/09/02 16:00:53 0## send to 2: RequestVote开始
+2024/09/02 16:00:53 0## send to 1: RequestVote开始
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 2## reply to 0 : RequestVote开始
+2024/09/02 16:00:53 2## reply to 0 : RequestVote结束
+2024/09/02 16:00:53 0## send to 2 : RequestVote结束
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 2## : startElection开始
+2024/09/02 16:00:53 2## : 启动选举, Term = 5
+2024/09/02 16:00:53 2## : startElection结束
+2024/09/02 16:00:53 2## send to 1: RequestVote开始
+2024/09/02 16:00:53 2## send to 0: RequestVote开始
+2024/09/02 16:00:53 0## reply to 2 : RequestVote开始
+2024/09/02 16:00:53 0## : old vote
+2024/09/02 16:00:53 0## reply to 2 : RequestVote结束
+2024/09/02 16:00:53 2## send to 0 : RequestVote结束
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 0## : startElection开始
+2024/09/02 16:00:53 0## : 启动选举, Term = 6
+2024/09/02 16:00:53 0## : startElection结束
+2024/09/02 16:00:53 0## send to 2: RequestVote开始
+2024/09/02 16:00:53 0## send to 1: RequestVote开始
+2024/09/02 16:00:53 2## reply to 0 : RequestVote开始
+2024/09/02 16:00:53 2## reply to 0 : RequestVote结束
+2024/09/02 16:00:53 0## send to 2 : RequestVote结束
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 2## : startElection开始
+2024/09/02 16:00:53 2## : 启动选举, Term = 6
+2024/09/02 16:00:53 2## : startElection结束
+2024/09/02 16:00:53 2## send to 1: RequestVote开始
+2024/09/02 16:00:53 2## send to 0: RequestVote开始
+2024/09/02 16:00:53 0## reply to 2 : RequestVote开始
+2024/09/02 16:00:53 0## : old vote
+2024/09/02 16:00:53 0## reply to 2 : RequestVote结束
+2024/09/02 16:00:53 2## send to 0 : RequestVote结束
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:53 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:53 0## : startElection开始
+2024/09/02 16:00:54 0## : 启动选举, Term = 7
+2024/09/02 16:00:54 0## : startElection结束
+2024/09/02 16:00:54 0## send to 1: RequestVote开始
+2024/09/02 16:00:54 0## send to 2: RequestVote开始
+2024/09/02 16:00:54 2## reply to 0 : RequestVote开始
+2024/09/02 16:00:54 2## reply to 0 : RequestVote结束
+2024/09/02 16:00:54 0## send to 2 : RequestVote结束
+2024/09/02 16:00:54 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:54 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:54 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:54 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:54 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:54 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:54 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:54 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:54 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:54 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:54 2## : startElection开始
+2024/09/02 16:00:54 2## : 启动选举, Term = 7
+2024/09/02 16:00:54 2## send to 0: RequestVote开始
+2024/09/02 16:00:54 2## : startElection结束
+2024/09/02 16:00:54 2## send to 1: RequestVote开始
+2024/09/02 16:00:54 0## reply to 2 : RequestVote开始
+2024/09/02 16:00:54 0## : old vote
+2024/09/02 16:00:54 0## reply to 2 : RequestVote结束
+2024/09/02 16:00:54 2## send to 0 : RequestVote结束
+2024/09/02 16:00:54 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:54 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:54 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:54 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:54 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:54 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:54 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:54 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:54 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:54 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:54 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:54 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:54 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:54 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:54 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:54 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:54 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:54 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:54 0## : startElection开始
+2024/09/02 16:00:54 0## : 启动选举, Term = 8
+2024/09/02 16:00:54 0## : startElection结束
+2024/09/02 16:00:54 0## send to 1: RequestVote开始
+2024/09/02 16:00:54 0## send to 2: RequestVote开始
+2024/09/02 16:00:54 2## reply to 0 : RequestVote开始
+2024/09/02 16:00:54 2## reply to 0 : RequestVote结束
+2024/09/02 16:00:54 0## send to 2 : RequestVote结束
+2024/09/02 16:00:54 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:54 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:54 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:54 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:54 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:54 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:54 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:54 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:54 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:54 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:54 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:54 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:54 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:54 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:54 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:54 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:54 0## : startElection开始
+2024/09/02 16:00:54 0## : 启动选举, Term = 9
+2024/09/02 16:00:54 0## : startElection结束
+2024/09/02 16:00:54 0## send to 2: RequestVote开始
+2024/09/02 16:00:54 0## send to 1: RequestVote开始
+2024/09/02 16:00:54 2## reply to 0 : RequestVote开始
+2024/09/02 16:00:54 2## reply to 0 : RequestVote结束
+2024/09/02 16:00:54 0## send to 2 : RequestVote结束
+2024/09/02 16:00:54 2## : startElection开始
+2024/09/02 16:00:54 2## : 启动选举, Term = 9
+2024/09/02 16:00:54 2## : startElection结束
+2024/09/02 16:00:54 2## send to 1: RequestVote开始
+2024/09/02 16:00:54 2## send to 0: RequestVote开始
+2024/09/02 16:00:54 0## reply to 2 : RequestVote开始
+2024/09/02 16:00:54 0## : old vote
+2024/09/02 16:00:54 0## reply to 2 : RequestVote结束
+2024/09/02 16:00:54 2## send to 0 : RequestVote结束
+2024/09/02 16:00:54 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:54 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:54 每个server提交的数目：[1 2 2]
+2024/09/02 16:00:54 cmd = 104, cmd1 = <nil>, nd = 0, index = 5
+2024/09/02 16:00:54 2## : startElection开始
+2024/09/02 16:00:54 2## : 启动选举, Term = 10
+2024/09/02 16:00:54 2## : startElection结束
+2024/09/02 16:00:54 2## send to 0: RequestVote开始
+2024/09/02 16:00:54 2## send to 1: RequestVote开始
+2024/09/02 16:00:54 0## reply to 2 : RequestVote开始
+2024/09/02 16:00:54 0## reply to 2 : RequestVote结束
+2024/09/02 16:00:54 2## send to 0 : RequestVote结束
+2024/09/02 16:00:54 0## : startElection开始
+2024/09/02 16:00:54 0## : 启动选举, Term = 10
+2024/09/02 16:00:54 0## : startElection结束
+2024/09/02 16:00:54 0## send to 2: RequestVote开始
+2024/09/02 16:00:54 0## send to 1: RequestVote开始
+2024/09/02 16:00:54 2## reply to 0 : RequestVote开始
+2024/09/02 16:00:54 2## : old vote
+2024/09/02 16:00:54 2## reply to 0 : RequestVote结束
+2024/09/02 16:00:54 0## send to 2 : RequestVote结束
+2024/09/02 16:00:54 0## send to 1--Term=1 : sendAppend结束
+2024/09/02 16:00:54 2## : startElection开始
+2024/09/02 16:00:54 2## : 启动选举, Term = 11
+2024/09/02 16:00:54 2## : startElection结束
+2024/09/02 16:00:54 2## send to 1: RequestVote开始
+2024/09/02 16:00:54 2## send to 0: RequestVote开始
+2024/09/02 16:00:54 0## reply to 2 : RequestVote开始
+2024/09/02 16:00:54 0## reply to 2 : RequestVote结束
+2024/09/02 16:00:54 2## send to 0 : RequestVote结束
+2024/09/02 16:00:55 0## : startElection开始
+2024/09/02 16:00:55 0## : 启动选举, Term = 11
+2024/09/02 16:00:55 0## : startElection结束
+2024/09/02 16:00:55 0## send to 1: RequestVote开始
+2024/09/02 16:00:55 0## send to 2: RequestVote开始
+2024/09/02 16:00:55 2## reply to 0 : RequestVote开始
+2024/09/02 16:00:55 2## : old vote
+2024/09/02 16:00:55 2## reply to 0 : RequestVote结束
+2024/09/02 16:00:55 0## send to 2 : RequestVote结束
+2024/09/02 16:00:55 0## send to 1 : RequestVote结束
+2024/09/02 16:00:55 0## send to 1 : RequestVote结束
+2024/09/02 16:00:55 0## send to 2--Term=1 : sendAppend结束
+2024/09/02 16:00:55 2## : startElection开始
+2024/09/02 16:00:55 2## : 启动选举, Term = 12
+2024/09/02 16:00:55 2## : startElection结束
+2024/09/02 16:00:55 2## send to 1: RequestVote开始
+2024/09/02 16:00:55 2## send to 0: RequestVote开始
+2024/09/02 16:00:55 0## reply to 2 : RequestVote开始
+2024/09/02 16:00:55 0## reply to 2 : RequestVote结束
+2024/09/02 16:00:55 2## send to 0 : RequestVote结束
+2024/09/02 16:00:55 0## : startElection开始
+2024/09/02 16:00:55 0## : 启动选举, Term = 12
+2024/09/02 16:00:55 0## : startElection结束
+2024/09/02 16:00:55 0## send to 1: RequestVote开始
+2024/09/02 16:00:55 0## send to 2: RequestVote开始
+2024/09/02 16:00:55 2## reply to 0 : RequestVote开始
+2024/09/02 16:00:55 2## : old vote
+2024/09/02 16:00:55 2## reply to 0 : RequestVote结束
+2024/09/02 16:00:55 0## send to 2 : RequestVote结束
+2024/09/02 16:00:55 2## : startElection开始
+2024/09/02 16:00:55 2## : 启动选举, Term = 13
+2024/09/02 16:00:55 2## : startElection结束
+2024/09/02 16:00:55 2## send to 1: RequestVote开始
+2024/09/02 16:00:55 2## send to 0: RequestVote开始
+2024/09/02 16:00:55 0## reply to 2 : RequestVote开始
+2024/09/02 16:00:55 0## reply to 2 : RequestVote结束
+2024/09/02 16:00:55 2## send to 0 : RequestVote结束
+2024/09/02 16:00:55 0## : startElection开始
+2024/09/02 16:00:55 0## : 启动选举, Term = 13
+2024/09/02 16:00:55 0## : startElection结束
+2024/09/02 16:00:55 0## send to 2: RequestVote开始
+2024/09/02 16:00:55 0## send to 1: RequestVote开始
+2024/09/02 16:00:55 2## reply to 0 : RequestVote开始
+2024/09/02 16:00:55 2## : old vote
+2024/09/02 16:00:55 2## reply to 0 : RequestVote结束
+2024/09/02 16:00:55 0## send to 2 : RequestVote结束
+2024/09/02 16:00:55 2## : startElection开始
+2024/09/02 16:00:55 2## : 启动选举, Term = 14
+2024/09/02 16:00:55 2## : startElection结束
+2024/09/02 16:00:55 2## send to 0: RequestVote开始
+2024/09/02 16:00:55 2## send to 1: RequestVote开始
+2024/09/02 16:00:55 0## reply to 2 : RequestVote开始
+2024/09/02 16:00:55 0## reply to 2 : RequestVote结束
+2024/09/02 16:00:55 2## send to 0 : RequestVote结束
+2024/09/02 16:00:55 0## : startElection开始
+2024/09/02 16:00:55 0## : 启动选举, Term = 14
+2024/09/02 16:00:55 0## : startElection结束
+2024/09/02 16:00:55 0## send to 2: RequestVote开始
+2024/09/02 16:00:55 0## send to 1: RequestVote开始
+2024/09/02 16:00:55 2## reply to 0 : RequestVote开始
+2024/09/02 16:00:55 2## : old vote
+2024/09/02 16:00:55 2## reply to 0 : RequestVote结束
+2024/09/02 16:00:55 0## send to 2 : RequestVote结束
+2024/09/02 16:00:55 2## send to 1 : RequestVote结束
+2024/09/02 16:00:55 2## : startElection开始
+2024/09/02 16:00:55 2## : 启动选举, Term = 15
+2024/09/02 16:00:55 2## : startElection结束
+2024/09/02 16:00:55 2## send to 0: RequestVote开始
+2024/09/02 16:00:55 2## send to 1: RequestVote开始
+2024/09/02 16:00:55 0## reply to 2 : RequestVote开始
+2024/09/02 16:00:55 0## reply to 2 : RequestVote结束
+2024/09/02 16:00:55 1## send to 0 : RequestVote结束
+2024/09/02 16:00:55 2## send to 0 : RequestVote结束
+2024/09/02 16:00:55 0## : startElection开始
+2024/09/02 16:00:55 0## : 启动选举, Term = 15
+2024/09/02 16:00:55 0## : startElection结束
+2024/09/02 16:00:55 0## send to 2: RequestVote开始
+2024/09/02 16:00:55 0## send to 1: RequestVote开始
+2024/09/02 16:00:55 2## reply to 0 : RequestVote开始
+2024/09/02 16:00:55 2## : old vote
+2024/09/02 16:00:55 2## reply to 0 : RequestVote结束
+2024/09/02 16:00:55 0## send to 2 : RequestVote结束
+2024/09/02 16:00:55 0## send to 1--Term=1 : sendAppend结束
+2024/09/02 16:00:55 0## send to 2--Term=1 : sendAppend结束
+2024/09/02 16:00:55 0## send to 1--Term=1 : sendAppend结束
+2024/09/02 16:00:56 0## : startElection开始
+2024/09/02 16:00:56 0## : 启动选举, Term = 16
+2024/09/02 16:00:56 0## : startElection结束
+2024/09/02 16:00:56 0## send to 2: RequestVote开始
+2024/09/02 16:00:56 0## send to 1: RequestVote开始
+2024/09/02 16:00:56 2## reply to 0 : RequestVote开始
+2024/09/02 16:00:56 2## reply to 0 : RequestVote结束
+2024/09/02 16:00:56 0## send to 2 : RequestVote结束
+2024/09/02 16:00:56 2## send to 1 : RequestVote结束
+2024/09/02 16:00:56 0## send to 1 : RequestVote结束
+2024/09/02 16:00:56 2## : startElection开始
+2024/09/02 16:00:56 2## : 启动选举, Term = 16
+2024/09/02 16:00:56 2## : startElection结束
+2024/09/02 16:00:56 2## send to 0: RequestVote开始
+2024/09/02 16:00:56 2## send to 1: RequestVote开始
+2024/09/02 16:00:56 0## reply to 2 : RequestVote开始
+2024/09/02 16:00:56 0## : old vote
+2024/09/02 16:00:56 0## reply to 2 : RequestVote结束
+2024/09/02 16:00:56 2## send to 0 : RequestVote结束
+2024/09/02 16:00:56 0## send to 2--Term=1 : sendAppend结束
+2024/09/02 16:00:56 0## : startElection开始
+2024/09/02 16:00:56 0## : 启动选举, Term = 17
+2024/09/02 16:00:56 0## : startElection结束
+2024/09/02 16:00:56 0## send to 1: RequestVote开始
+2024/09/02 16:00:56 0## send to 2: RequestVote开始
+2024/09/02 16:00:56 2## reply to 0 : RequestVote开始
+2024/09/02 16:00:56 2## reply to 0 : RequestVote结束
+2024/09/02 16:00:56 0## send to 2 : RequestVote结束
+2024/09/02 16:00:56 0## : startElection开始
+2024/09/02 16:00:56 0## : 启动选举, Term = 18
+2024/09/02 16:00:56 0## : startElection结束
+2024/09/02 16:00:56 0## send to 1: RequestVote开始
+2024/09/02 16:00:56 0## send to 2: RequestVote开始
+2024/09/02 16:00:56 2## reply to 0 : RequestVote开始
+2024/09/02 16:00:56 2## reply to 0 : RequestVote结束
+2024/09/02 16:00:56 0## send to 2 : RequestVote结束
+2024/09/02 16:00:56 2## : startElection开始
+2024/09/02 16:00:56 2## : 启动选举, Term = 18
+2024/09/02 16:00:56 2## : startElection结束
+2024/09/02 16:00:56 2## send to 0: RequestVote开始
+2024/09/02 16:00:56 2## send to 1: RequestVote开始
+2024/09/02 16:00:56 0## reply to 2 : RequestVote开始
+2024/09/02 16:00:56 0## : old vote
+2024/09/02 16:00:56 0## reply to 2 : RequestVote结束
+2024/09/02 16:00:56 2## send to 0 : RequestVote结束
+2024/09/02 16:00:56 0## send to 1 : RequestVote结束
+2024/09/02 16:00:56 0## send to 1 : RequestVote结束
+2024/09/02 16:00:56 0## : startElection开始
+2024/09/02 16:00:56 0## : 启动选举, Term = 19
+2024/09/02 16:00:56 0## : startElection结束
+2024/09/02 16:00:56 0## send to 2: RequestVote开始
+2024/09/02 16:00:56 0## send to 1: RequestVote开始
+2024/09/02 16:00:56 2## reply to 0 : RequestVote开始
+2024/09/02 16:00:56 2## reply to 0 : RequestVote结束
+2024/09/02 16:00:56 0## send to 2 : RequestVote结束
+2024/09/02 16:00:56 2## : startElection开始
+2024/09/02 16:00:56 2## : 启动选举, Term = 19
+2024/09/02 16:00:56 2## : startElection结束
+2024/09/02 16:00:56 2## send to 0: RequestVote开始
+2024/09/02 16:00:56 2## send to 1: RequestVote开始
+2024/09/02 16:00:56 0## reply to 2 : RequestVote开始
+2024/09/02 16:00:56 0## : old vote
+2024/09/02 16:00:56 0## reply to 2 : RequestVote结束
+2024/09/02 16:00:56 2## send to 0 : RequestVote结束
+2024/09/02 16:00:56 2## send to 1 : RequestVote结束
+2024/09/02 16:00:56 2## send to 1 : RequestVote结束
+2024/09/02 16:00:56 2## send to 1 : RequestVote结束
+2024/09/02 16:00:57 2## : startElection开始
+2024/09/02 16:00:57 2## : 启动选举, Term = 20
+2024/09/02 16:00:57 2## : startElection结束
+2024/09/02 16:00:57 2## send to 0: RequestVote开始
+2024/09/02 16:00:57 2## send to 1: RequestVote开始
+2024/09/02 16:00:57 0## reply to 2 : RequestVote开始
+2024/09/02 16:00:57 0## reply to 2 : RequestVote结束
+2024/09/02 16:00:57 2## send to 0 : RequestVote结束
+2024/09/02 16:00:57 2## send to 1 : RequestVote结束
+2024/09/02 16:00:57 0## send to 1 : RequestVote结束
+2024/09/02 16:00:57 0## : startElection开始
+2024/09/02 16:00:57 0## : 启动选举, Term = 20
+2024/09/02 16:00:57 0## : startElection结束
+2024/09/02 16:00:57 0## send to 2: RequestVote开始
+2024/09/02 16:00:57 0## send to 1: RequestVote开始
+2024/09/02 16:00:57 2## reply to 0 : RequestVote开始
+2024/09/02 16:00:57 2## : old vote
+2024/09/02 16:00:57 2## reply to 0 : RequestVote结束
+2024/09/02 16:00:57 0## send to 2 : RequestVote结束
+2024/09/02 16:00:57 2## : startElection开始
+2024/09/02 16:00:57 2## : 启动选举, Term = 21
+2024/09/02 16:00:57 2## : startElection结束
+2024/09/02 16:00:57 2## send to 1: RequestVote开始
+2024/09/02 16:00:57 2## send to 0: RequestVote开始
+2024/09/02 16:00:57 0## reply to 2 : RequestVote开始
+2024/09/02 16:00:57 0## reply to 2 : RequestVote结束
+2024/09/02 16:00:57 2## send to 0 : RequestVote结束
+2024/09/02 16:00:57 2## send to 1 : RequestVote结束
+2024/09/02 16:00:57 0## : startElection开始
+2024/09/02 16:00:57 0## : 启动选举, Term = 21
+2024/09/02 16:00:57 0## : startElection结束
+2024/09/02 16:00:57 0## send to 2: RequestVote开始
+2024/09/02 16:00:57 0## send to 1: RequestVote开始
+2024/09/02 16:00:57 2## reply to 0 : RequestVote开始
+2024/09/02 16:00:57 2## : old vote
+2024/09/02 16:00:57 2## reply to 0 : RequestVote结束
+2024/09/02 16:00:57 0## send to 2 : RequestVote结束
+2024/09/02 16:00:57 2## : startElection开始
+2024/09/02 16:00:57 2## : 启动选举, Term = 22
+2024/09/02 16:00:57 2## : startElection结束
+2024/09/02 16:00:57 2## send to 1: RequestVote开始
+2024/09/02 16:00:57 2## send to 0: RequestVote开始
+2024/09/02 16:00:57 0## reply to 2 : RequestVote开始
+2024/09/02 16:00:57 0## reply to 2 : RequestVote结束
+2024/09/02 16:00:57 2## send to 0 : RequestVote结束
+2024/09/02 16:00:57 0## : startElection开始
+2024/09/02 16:00:57 0## : 启动选举, Term = 22
+2024/09/02 16:00:57 0## : startElection结束
+2024/09/02 16:00:57 0## send to 2: RequestVote开始
+2024/09/02 16:00:57 0## send to 1: RequestVote开始
+2024/09/02 16:00:57 2## reply to 0 : RequestVote开始
+2024/09/02 16:00:57 2## : old vote
+2024/09/02 16:00:57 2## reply to 0 : RequestVote结束
+2024/09/02 16:00:57 0## send to 2 : RequestVote结束
+2024/09/02 16:00:57 2## : startElection开始
+2024/09/02 16:00:57 2## : 启动选举, Term = 23
+2024/09/02 16:00:57 2## : startElection结束
+2024/09/02 16:00:57 2## send to 1: RequestVote开始
+2024/09/02 16:00:57 2## send to 0: RequestVote开始
+2024/09/02 16:00:57 0## reply to 2 : RequestVote开始
+2024/09/02 16:00:57 0## reply to 2 : RequestVote结束
+2024/09/02 16:00:57 2## send to 0 : RequestVote结束
+2024/09/02 16:00:57 1## send to 0--Term=2 : sendAppend结束
+2024/09/02 16:00:57 0## : startElection开始
+2024/09/02 16:00:57 0## : 启动选举, Term = 23
+2024/09/02 16:00:57 0## : startElection结束
+2024/09/02 16:00:57 0## send to 1: RequestVote开始
+2024/09/02 16:00:57 0## send to 2: RequestVote开始
+2024/09/02 16:00:57 2## reply to 0 : RequestVote开始
+2024/09/02 16:00:57 2## : old vote
+2024/09/02 16:00:57 2## reply to 0 : RequestVote结束
+2024/09/02 16:00:57 0## send to 2 : RequestVote结束
+2024/09/02 16:00:57 2## send to 1 : RequestVote结束
+2024/09/02 16:00:58 0## send to 1--Term=1 : sendAppend结束
+2024/09/02 16:00:58 2## : startElection开始
+2024/09/02 16:00:58 2## : 启动选举, Term = 24
+2024/09/02 16:00:58 2## : startElection结束
+2024/09/02 16:00:58 2## send to 0: RequestVote开始
+2024/09/02 16:00:58 2## send to 1: RequestVote开始
+2024/09/02 16:00:58 0## reply to 2 : RequestVote开始
+2024/09/02 16:00:58 0## reply to 2 : RequestVote结束
+2024/09/02 16:00:58 2## send to 0 : RequestVote结束
+2024/09/02 16:00:58 2## send to 1 : RequestVote结束
+2024/09/02 16:00:58 0## : startElection开始
+2024/09/02 16:00:58 0## : 启动选举, Term = 24
+2024/09/02 16:00:58 0## send to 1: RequestVote开始
+2024/09/02 16:00:58 0## send to 2: RequestVote开始
+2024/09/02 16:00:58 0## : startElection结束
+2024/09/02 16:00:58 2## reply to 0 : RequestVote开始
+2024/09/02 16:00:58 2## : old vote
+2024/09/02 16:00:58 2## reply to 0 : RequestVote结束
+2024/09/02 16:00:58 0## send to 2 : RequestVote结束
+2024/09/02 16:00:58 2## send to 1 : RequestVote结束
+2024/09/02 16:00:58 2## : startElection开始
+2024/09/02 16:00:58 2## : 启动选举, Term = 25
+2024/09/02 16:00:58 2## : startElection结束
+2024/09/02 16:00:58 2## send to 1: RequestVote开始
+2024/09/02 16:00:58 2## send to 0: RequestVote开始
+2024/09/02 16:00:58 0## reply to 2 : RequestVote开始
+2024/09/02 16:00:58 0## reply to 2 : RequestVote结束
+2024/09/02 16:00:58 2## send to 0 : RequestVote结束
+2024/09/02 16:00:58 0## : startElection开始
+2024/09/02 16:00:58 0## : 启动选举, Term = 25
+2024/09/02 16:00:58 0## : startElection结束
+2024/09/02 16:00:58 0## send to 2: RequestVote开始
+2024/09/02 16:00:58 0## send to 1: RequestVote开始
+2024/09/02 16:00:58 2## reply to 0 : RequestVote开始
+2024/09/02 16:00:58 2## : old vote
+2024/09/02 16:00:58 2## reply to 0 : RequestVote结束
+2024/09/02 16:00:58 0## send to 2 : RequestVote结束
+2024/09/02 16:00:58 2## : startElection开始
+2024/09/02 16:00:58 2## : 启动选举, Term = 26
+2024/09/02 16:00:58 2## : startElection结束
+2024/09/02 16:00:58 2## send to 1: RequestVote开始
+2024/09/02 16:00:58 2## send to 0: RequestVote开始
+2024/09/02 16:00:58 0## reply to 2 : RequestVote开始
+2024/09/02 16:00:58 0## reply to 2 : RequestVote结束
+2024/09/02 16:00:58 2## send to 0 : RequestVote结束
+2024/09/02 16:00:58 0## : startElection开始
+2024/09/02 16:00:58 0## : 启动选举, Term = 26
+2024/09/02 16:00:58 0## : startElection结束
+2024/09/02 16:00:58 0## send to 1: RequestVote开始
+2024/09/02 16:00:58 0## send to 2: RequestVote开始
+2024/09/02 16:00:58 2## reply to 0 : RequestVote开始
+2024/09/02 16:00:58 2## : old vote
+2024/09/02 16:00:58 2## reply to 0 : RequestVote结束
+2024/09/02 16:00:58 0## send to 2 : RequestVote结束
+2024/09/02 16:00:58 0## send to 1 : RequestVote结束
+2024/09/02 16:00:58 2## : startElection开始
+2024/09/02 16:00:58 2## : 启动选举, Term = 27
+2024/09/02 16:00:58 2## : startElection结束
+2024/09/02 16:00:58 2## send to 1: RequestVote开始
+2024/09/02 16:00:58 2## send to 0: RequestVote开始
+2024/09/02 16:00:58 0## reply to 2 : RequestVote开始
+2024/09/02 16:00:58 0## reply to 2 : RequestVote结束
+2024/09/02 16:00:58 2## send to 0 : RequestVote结束
+2024/09/02 16:00:58 0## : startElection开始
+2024/09/02 16:00:58 0## : 启动选举, Term = 27
+2024/09/02 16:00:58 0## : startElection结束
+2024/09/02 16:00:58 0## send to 1: RequestVote开始
+2024/09/02 16:00:58 0## send to 2: RequestVote开始
+2024/09/02 16:00:58 2## reply to 0 : RequestVote开始
+2024/09/02 16:00:58 2## : old vote
+2024/09/02 16:00:58 2## reply to 0 : RequestVote结束
+2024/09/02 16:00:58 0## send to 2 : RequestVote结束
+2024/09/02 16:00:58 0## send to 1 : RequestVote结束
+2024/09/02 16:00:59 2## : startElection开始
+2024/09/02 16:00:59 2## : 启动选举, Term = 28
+2024/09/02 16:00:59 2## : startElection结束
+2024/09/02 16:00:59 2## send to 1: RequestVote开始
+2024/09/02 16:00:59 2## send to 0: RequestVote开始
+2024/09/02 16:00:59 0## reply to 2 : RequestVote开始
+2024/09/02 16:00:59 0## reply to 2 : RequestVote结束
+2024/09/02 16:00:59 2## send to 0 : RequestVote结束
+2024/09/02 16:00:59 0## : startElection开始
+2024/09/02 16:00:59 0## : 启动选举, Term = 28
+2024/09/02 16:00:59 0## : startElection结束
+2024/09/02 16:00:59 0## send to 2: RequestVote开始
+2024/09/02 16:00:59 0## send to 1: RequestVote开始
+2024/09/02 16:00:59 2## reply to 0 : RequestVote开始
+2024/09/02 16:00:59 2## : old vote
+2024/09/02 16:00:59 2## reply to 0 : RequestVote结束
+2024/09/02 16:00:59 0## send to 2 : RequestVote结束
+2024/09/02 16:00:59 2## send to 1 : RequestVote结束
+2024/09/02 16:00:59 2## : startElection开始
+2024/09/02 16:00:59 2## : 启动选举, Term = 29
+2024/09/02 16:00:59 2## : startElection结束
+2024/09/02 16:00:59 2## send to 0: RequestVote开始
+2024/09/02 16:00:59 2## send to 1: RequestVote开始
+2024/09/02 16:00:59 0## reply to 2 : RequestVote开始
+2024/09/02 16:00:59 0## reply to 2 : RequestVote结束
+2024/09/02 16:00:59 2## send to 0 : RequestVote结束
+2024/09/02 16:00:59 0## : startElection开始
+2024/09/02 16:00:59 0## : 启动选举, Term = 29
+2024/09/02 16:00:59 0## : startElection结束
+2024/09/02 16:00:59 0## send to 1: RequestVote开始
+2024/09/02 16:00:59 0## send to 2: RequestVote开始
+2024/09/02 16:00:59 2## reply to 0 : RequestVote开始
+2024/09/02 16:00:59 2## : old vote
+2024/09/02 16:00:59 2## reply to 0 : RequestVote结束
+2024/09/02 16:00:59 0## send to 2 : RequestVote结束
+2024/09/02 16:00:59 0## send to 1 : RequestVote结束
+2024/09/02 16:00:59 2## : startElection开始
+2024/09/02 16:00:59 2## : 启动选举, Term = 30
+2024/09/02 16:00:59 2## : startElection结束
+2024/09/02 16:00:59 2## send to 0: RequestVote开始
+2024/09/02 16:00:59 2## send to 1: RequestVote开始
+2024/09/02 16:00:59 0## reply to 2 : RequestVote开始
+2024/09/02 16:00:59 0## reply to 2 : RequestVote结束
+2024/09/02 16:00:59 2## send to 0 : RequestVote结束
+2024/09/02 16:00:59 0## send to 1 : RequestVote结束
+2024/09/02 16:00:59 0## send to 1 : RequestVote结束
+2024/09/02 16:00:59 0## send to 1 : RequestVote结束
+2024/09/02 16:00:59 0## send to 1 : RequestVote结束
+2024/09/02 16:00:59 0## : startElection开始
+2024/09/02 16:00:59 0## : 启动选举, Term = 30
+2024/09/02 16:00:59 0## : startElection结束
+2024/09/02 16:00:59 0## send to 1: RequestVote开始
+2024/09/02 16:00:59 0## send to 2: RequestVote开始
+2024/09/02 16:00:59 2## reply to 0 : RequestVote开始
+2024/09/02 16:00:59 2## : old vote
+2024/09/02 16:00:59 2## reply to 0 : RequestVote结束
+2024/09/02 16:00:59 0## send to 2 : RequestVote结束
+2024/09/02 16:00:59 2## : startElection开始
+2024/09/02 16:00:59 2## : 启动选举, Term = 31
+2024/09/02 16:00:59 2## : startElection结束
+2024/09/02 16:00:59 2## send to 0: RequestVote开始
+2024/09/02 16:00:59 2## send to 1: RequestVote开始
+2024/09/02 16:00:59 0## reply to 2 : RequestVote开始
+2024/09/02 16:00:59 0## reply to 2 : RequestVote结束
+2024/09/02 16:00:59 2## send to 0 : RequestVote结束
+2024/09/02 16:00:59 2## send to 1 : RequestVote结束
+2024/09/02 16:00:59 2## send to 1 : RequestVote结束
+2024/09/02 16:00:59 0## send to 1 : RequestVote结束
+2024/09/02 16:00:59 0## : startElection开始
+2024/09/02 16:00:59 0## : 启动选举, Term = 31
+2024/09/02 16:00:59 0## : startElection结束
+2024/09/02 16:00:59 0## send to 1: RequestVote开始
+2024/09/02 16:00:59 0## send to 2: RequestVote开始
+2024/09/02 16:00:59 2## reply to 0 : RequestVote开始
+2024/09/02 16:00:59 2## : old vote
+2024/09/02 16:00:59 2## reply to 0 : RequestVote结束
+2024/09/02 16:00:59 0## send to 2 : RequestVote结束
+2024/09/02 16:00:59 0## send to 1 : RequestVote结束
+2024/09/02 16:01:00 2## : startElection开始
+2024/09/02 16:01:00 2## : 启动选举, Term = 32
+2024/09/02 16:01:00 2## : startElection结束
+2024/09/02 16:01:00 2## send to 0: RequestVote开始
+2024/09/02 16:01:00 2## send to 1: RequestVote开始
+2024/09/02 16:01:00 0## reply to 2 : RequestVote开始
+2024/09/02 16:01:00 0## reply to 2 : RequestVote结束
+2024/09/02 16:01:00 2## send to 0 : RequestVote结束
+2024/09/02 16:01:00 2## send to 1 : RequestVote结束
+2024/09/02 16:01:00 2## send to 1 : RequestVote结束
+2024/09/02 16:01:00 0## send to 1 : RequestVote结束
+2024/09/02 16:01:00 0## : startElection开始
+2024/09/02 16:01:00 0## : 启动选举, Term = 32
+2024/09/02 16:01:00 0## : startElection结束
+2024/09/02 16:01:00 0## send to 1: RequestVote开始
+2024/09/02 16:01:00 0## send to 2: RequestVote开始
+2024/09/02 16:01:00 2## reply to 0 : RequestVote开始
+2024/09/02 16:01:00 2## : old vote
+2024/09/02 16:01:00 2## reply to 0 : RequestVote结束
+2024/09/02 16:01:00 0## send to 2 : RequestVote结束
+2024/09/02 16:01:00 2## send to 1 : RequestVote结束
+2024/09/02 16:01:00 2## : startElection开始
+2024/09/02 16:01:00 2## : 启动选举, Term = 33
+2024/09/02 16:01:00 2## : startElection结束
+2024/09/02 16:01:00 2## send to 0: RequestVote开始
+2024/09/02 16:01:00 2## send to 1: RequestVote开始
+2024/09/02 16:01:00 0## reply to 2 : RequestVote开始
+2024/09/02 16:01:00 0## reply to 2 : RequestVote结束
+2024/09/02 16:01:00 2## send to 0 : RequestVote结束
+2024/09/02 16:01:00 0## : startElection开始
+2024/09/02 16:01:00 0## : 启动选举, Term = 33
+2024/09/02 16:01:00 0## : startElection结束
+2024/09/02 16:01:00 0## send to 1: RequestVote开始
+2024/09/02 16:01:00 0## send to 2: RequestVote开始
+2024/09/02 16:01:00 0## send to 1 : RequestVote结束
+2024/09/02 16:01:00 2## reply to 0 : RequestVote开始
+2024/09/02 16:01:00 2## : old vote
+2024/09/02 16:01:00 2## reply to 0 : RequestVote结束
+2024/09/02 16:01:00 0## send to 2 : RequestVote结束
+2024/09/02 16:01:00 2## send to 1 : RequestVote结束
+2024/09/02 16:01:00 2## : startElection开始
+2024/09/02 16:01:00 2## : 启动选举, Term = 34
+2024/09/02 16:01:00 2## : startElection结束
+2024/09/02 16:01:00 2## send to 1: RequestVote开始
+2024/09/02 16:01:00 2## send to 0: RequestVote开始
+2024/09/02 16:01:00 0## reply to 2 : RequestVote开始
+2024/09/02 16:01:00 0## reply to 2 : RequestVote结束
+2024/09/02 16:01:00 2## send to 0 : RequestVote结束
+2024/09/02 16:01:00 2## send to 1 : RequestVote结束
+2024/09/02 16:01:00 0## : startElection开始
+2024/09/02 16:01:00 0## : 启动选举, Term = 34
+2024/09/02 16:01:00 0## : startElection结束
+2024/09/02 16:01:00 0## send to 1: RequestVote开始
+2024/09/02 16:01:00 0## send to 2: RequestVote开始
+2024/09/02 16:01:00 2## reply to 0 : RequestVote开始
+2024/09/02 16:01:00 2## : old vote
+2024/09/02 16:01:00 2## reply to 0 : RequestVote结束
+2024/09/02 16:01:00 0## send to 2 : RequestVote结束
+2024/09/02 16:01:00 0## send to 1 : RequestVote结束
+2024/09/02 16:01:00 0## send to 1 : RequestVote结束
+2024/09/02 16:01:00 2## : startElection开始
+2024/09/02 16:01:00 2## : 启动选举, Term = 35
+2024/09/02 16:01:00 2## : startElection结束
+2024/09/02 16:01:00 2## send to 1: RequestVote开始
+2024/09/02 16:01:00 2## send to 0: RequestVote开始
+2024/09/02 16:01:00 0## reply to 2 : RequestVote开始
+2024/09/02 16:01:00 0## reply to 2 : RequestVote结束
+2024/09/02 16:01:00 2## send to 0 : RequestVote结束
+2024/09/02 16:01:00 0## : startElection开始
+2024/09/02 16:01:00 0## : 启动选举, Term = 35
+2024/09/02 16:01:00 0## : startElection结束
+2024/09/02 16:01:00 0## send to 1: RequestVote开始
+2024/09/02 16:01:00 0## send to 2: RequestVote开始
+2024/09/02 16:01:00 2## reply to 0 : RequestVote开始
+2024/09/02 16:01:00 2## : old vote
+2024/09/02 16:01:00 2## reply to 0 : RequestVote结束
+2024/09/02 16:01:00 0## send to 2 : RequestVote结束
+2024/09/02 16:01:01 2## : startElection开始
+2024/09/02 16:01:01 2## : 启动选举, Term = 36
+2024/09/02 16:01:01 2## : startElection结束
+2024/09/02 16:01:01 2## send to 0: RequestVote开始
+2024/09/02 16:01:01 2## send to 1: RequestVote开始
+2024/09/02 16:01:01 0## reply to 2 : RequestVote开始
+2024/09/02 16:01:01 0## reply to 2 : RequestVote结束
+2024/09/02 16:01:01 2## send to 0 : RequestVote结束
+2024/09/02 16:01:01 0## : startElection开始
+2024/09/02 16:01:01 0## : 启动选举, Term = 36
+2024/09/02 16:01:01 0## : startElection结束
+2024/09/02 16:01:01 0## send to 1: RequestVote开始
+2024/09/02 16:01:01 0## send to 2: RequestVote开始
+2024/09/02 16:01:01 2## reply to 0 : RequestVote开始
+2024/09/02 16:01:01 2## : old vote
+2024/09/02 16:01:01 2## reply to 0 : RequestVote结束
+2024/09/02 16:01:01 0## send to 2 : RequestVote结束
+2024/09/02 16:01:01 2## send to 1 : RequestVote结束
+2024/09/02 16:01:01 0## send to 1 : RequestVote结束
+2024/09/02 16:01:01 2## : startElection开始
+2024/09/02 16:01:01 2## : 启动选举, Term = 37
+2024/09/02 16:01:01 2## : startElection结束
+2024/09/02 16:01:01 2## send to 1 : RequestVote结束
+2024/09/02 16:01:01 2## send to 0: RequestVote开始
+2024/09/02 16:01:01 2## send to 1: RequestVote开始
+2024/09/02 16:01:01 0## reply to 2 : RequestVote开始
+2024/09/02 16:01:01 0## reply to 2 : RequestVote结束
+2024/09/02 16:01:01 2## send to 0 : RequestVote结束
+2024/09/02 16:01:01 2## send to 1 : RequestVote结束
+2024/09/02 16:01:01 0## : startElection开始
+2024/09/02 16:01:01 0## : 启动选举, Term = 37
+2024/09/02 16:01:01 0## : startElection结束
+2024/09/02 16:01:01 0## send to 2: RequestVote开始
+2024/09/02 16:01:01 0## send to 1: RequestVote开始
+2024/09/02 16:01:01 2## reply to 0 : RequestVote开始
+2024/09/02 16:01:01 2## : old vote
+2024/09/02 16:01:01 2## reply to 0 : RequestVote结束
+2024/09/02 16:01:01 0## send to 2 : RequestVote结束
+2024/09/02 16:01:01 2## : startElection开始
+2024/09/02 16:01:01 2## : 启动选举, Term = 38
+2024/09/02 16:01:01 2## : startElection结束
+2024/09/02 16:01:01 2## send to 0: RequestVote开始
+2024/09/02 16:01:01 2## send to 1: RequestVote开始
+2024/09/02 16:01:01 0## reply to 2 : RequestVote开始
+2024/09/02 16:01:01 0## reply to 2 : RequestVote结束
+2024/09/02 16:01:01 2## send to 0 : RequestVote结束
+2024/09/02 16:01:01 0## send to 1 : RequestVote结束
+2024/09/02 16:01:01 0## send to 1 : RequestVote结束
+2024/09/02 16:01:01 0## : startElection开始
+2024/09/02 16:01:01 0## : 启动选举, Term = 38
+2024/09/02 16:01:01 0## : startElection结束
+2024/09/02 16:01:01 0## send to 1: RequestVote开始
+2024/09/02 16:01:01 0## send to 2: RequestVote开始
+2024/09/02 16:01:01 2## reply to 0 : RequestVote开始
+2024/09/02 16:01:01 2## : old vote
+2024/09/02 16:01:01 2## reply to 0 : RequestVote结束
+2024/09/02 16:01:01 0## send to 2 : RequestVote结束
+2024/09/02 16:01:01 0## send to 1 : RequestVote结束
+2024/09/02 16:01:01 2## : startElection开始
+2024/09/02 16:01:01 2## : 启动选举, Term = 39
+2024/09/02 16:01:01 2## : startElection结束
+2024/09/02 16:01:01 2## send to 0: RequestVote开始
+2024/09/02 16:01:01 2## send to 1: RequestVote开始
+2024/09/02 16:01:01 0## reply to 2 : RequestVote开始
+2024/09/02 16:01:01 0## reply to 2 : RequestVote结束
+2024/09/02 16:01:01 2## send to 0 : RequestVote结束
+2024/09/02 16:01:01 2## send to 1 : RequestVote结束
+2024/09/02 16:01:01 0## send to 1 : RequestVote结束
+2024/09/02 16:01:01 2## send to 1 : RequestVote结束
+2024/09/02 16:01:02 0## send to 1 : RequestVote结束
+2024/09/02 16:01:02 2## : startElection开始
+2024/09/02 16:01:02 2## : 启动选举, Term = 40
+2024/09/02 16:01:02 2## send to 0: RequestVote开始
+2024/09/02 16:01:02 2## send to 1: RequestVote开始
+2024/09/02 16:01:02 2## : startElection结束
+2024/09/02 16:01:02 0## reply to 2 : RequestVote开始
+2024/09/02 16:01:02 0## reply to 2 : RequestVote结束
+2024/09/02 16:01:02 2## : 当选！, Term = 41
+2024/09/02 16:01:02 2## send to 0 : RequestVote结束
+2024/09/02 16:01:02 2##--Term=41 : sendAppendEntries开始
+2024/09/02 16:01:02 2##--Term=41 : sendAppendEntries结束
+2024/09/02 16:01:02 2## send to 0--Term=41 : sendAppend开始
+2024/09/02 16:01:02 2## send to 1--Term=41 : sendAppend开始
+2024/09/02 16:01:02 0## reply to 2 : AppendEntries开始
+2024/09/02 16:01:02 0## reply to 2 : AppendEntries结束
+2024/09/02 16:01:02 0## reply to 2 : AppendEntries开始
+2024/09/02 16:01:02 0## reply to 2 : AppendEntries结束
+2024/09/02 16:01:02 0## : rf.lastApplied=1, rf.commitIndex=2, len(log)=3
+2024/09/02 16:01:02 2## : nextIndex=[3 3 3], matchIndex=[2 0 0], commitIndex=2
+2024/09/02 16:01:02 2## send to 0--Term=41 : sendAppend结束
+2024/09/02 16:01:02 2##--Term=41 : sendAppendEntries开始
+2024/09/02 16:01:02 2##--Term=41 : sendAppendEntries结束
+2024/09/02 16:01:02 2## send to 0--Term=41 : sendAppend开始
+2024/09/02 16:01:02 每个server提交的数目：[2 2 2]
+2024/09/02 16:01:02 2## send to 1--Term=41 : sendAppend开始
+2024/09/02 16:01:02 cmd = 104, cmd1 = <nil>, nd = 0, index = 3
+2024/09/02 16:01:02 0## reply to 2 : AppendEntries开始
+2024/09/02 16:01:02 0## reply to 2 : AppendEntries结束
+2024/09/02 16:01:02 2## : nextIndex=[4 3 3], matchIndex=[3 0 0], commitIndex=2
+2024/09/02 16:01:02 2## send to 0--Term=41 : sendAppend结束
+2024/09/02 16:01:02 2## : rf.lastApplied=2, rf.commitIndex=3, len(log)=4
+2024/09/02 16:01:02 每个server提交的数目：[2 2 3]
+2024/09/02 16:01:02 cmd = 104, cmd1 = 104, nd = 1, index = 3
+2024/09/02 16:01:02 每个server提交的数目：[2 2 3]
+2024/09/02 16:01:02 cmd = 104, cmd1 = 104, nd = 1, index = 3
+2024/09/02 16:01:02 每个server提交的数目：[2 2 3]
+2024/09/02 16:01:02 cmd = 104, cmd1 = 104, nd = 1, index = 3
+2024/09/02 16:01:02 每个server提交的数目：[2 2 3]
+2024/09/02 16:01:02 cmd = 104, cmd1 = 104, nd = 1, index = 3
+2024/09/02 16:01:02 每个server提交的数目：[2 2 3]
+2024/09/02 16:01:02 cmd = 104, cmd1 = 104, nd = 1, index = 3
+2024/09/02 16:01:02 每个server提交的数目：[2 2 3]
+2024/09/02 16:01:02 cmd = 104, cmd1 = 104, nd = 1, index = 3
+2024/09/02 16:01:02 每个server提交的数目：[2 2 3]
+2024/09/02 16:01:02 cmd = 104, cmd1 = 104, nd = 1, index = 3
+2024/09/02 16:01:02 0## reply to 2 : AppendEntries开始
+2024/09/02 16:01:02 0## reply to 2 : AppendEntries结束
+2024/09/02 16:01:02 0## : rf.lastApplied=2, rf.commitIndex=3, len(log)=4
+2024/09/02 16:01:02 2## : 正常心跳
+2024/09/02 16:01:02 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:02 cmd = 104, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:02 1##--Term=2 : sendAppendEntries开始
+2024/09/02 16:01:02 1##--Term=2 : sendAppendEntries结束
+2024/09/02 16:01:02 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:02 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:02 1## send to 2--Term=2 : sendAppend开始
+2024/09/02 16:01:02 1## send to 0--Term=2 : sendAppend开始
+2024/09/02 16:01:02 2## reply to 1 : AppendEntries开始
+2024/09/02 16:01:02 2## : old entries
+2024/09/02 16:01:02 2## reply to 1 : AppendEntries结束
+2024/09/02 16:01:02 0## reply to 1 : AppendEntries开始
+2024/09/02 16:01:02 0## : old entries
+2024/09/02 16:01:02 0## reply to 1 : AppendEntries结束
+2024/09/02 16:01:02 1## send to 0--Term=2 : sendAppend结束
+2024/09/02 16:01:02 1## send to 2--Term=2 : sendAppend结束
+2024/09/02 16:01:02 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:02 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:02 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:02 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:02 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:02 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:02 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:02 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:02 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:02 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:02 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:02 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:02 0## reply to 2 : AppendEntries开始
+2024/09/02 16:01:02 1## reply to 2 : AppendEntries开始
+2024/09/02 16:01:02 1## reply to 2 : AppendEntries结束
+2024/09/02 16:01:02 0## reply to 2 : AppendEntries结束
+2024/09/02 16:01:02 2## : 正常心跳
+2024/09/02 16:01:02 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:02 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:02 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:02 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:02 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:02 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:02 0## send to 1 : RequestVote结束
+2024/09/02 16:01:02 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:02 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:02 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:02 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:02 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:02 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:02 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:02 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:02 0## reply to 2 : AppendEntries开始
+2024/09/02 16:01:02 1## reply to 2 : AppendEntries开始
+2024/09/02 16:01:02 1## reply to 2 : AppendEntries结束
+2024/09/02 16:01:02 0## reply to 2 : AppendEntries结束
+2024/09/02 16:01:02 2## : 正常心跳
+2024/09/02 16:01:02 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:02 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:02 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:02 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:02 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:02 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:02 2## send to 1 : RequestVote结束
+2024/09/02 16:01:02 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:02 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:02 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:02 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:02 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:02 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:02 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:02 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:02 0## reply to 2 : AppendEntries开始
+2024/09/02 16:01:02 0## reply to 2 : AppendEntries结束
+2024/09/02 16:01:02 2## : 正常心跳
+2024/09/02 16:01:02 1## reply to 2 : AppendEntries开始
+2024/09/02 16:01:02 1## reply to 2 : AppendEntries结束
+2024/09/02 16:01:02 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:02 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:02 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:02 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:02 0## send to 1 : RequestVote结束
+2024/09/02 16:01:02 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:02 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:02 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:02 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:02 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:02 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:02 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:02 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:02 2## send to 1 : RequestVote结束
+2024/09/02 16:01:02 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:02 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:02 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:02 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:02 0## reply to 2 : AppendEntries开始
+2024/09/02 16:01:02 0## reply to 2 : AppendEntries结束
+2024/09/02 16:01:02 1## reply to 2 : AppendEntries开始
+2024/09/02 16:01:02 1## reply to 2 : AppendEntries结束
+2024/09/02 16:01:02 2## : 正常心跳
+2024/09/02 16:01:02 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:02 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:02 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:02 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:02 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:02 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:02 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:02 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:02 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:02 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:02 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:02 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:02 1## send to 0--Term=2 : sendAppend结束
+2024/09/02 16:01:02 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:02 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 0## reply to 2 : AppendEntries开始
+2024/09/02 16:01:03 0## reply to 2 : AppendEntries结束
+2024/09/02 16:01:03 1## reply to 2 : AppendEntries开始
+2024/09/02 16:01:03 1## reply to 2 : AppendEntries结束
+2024/09/02 16:01:03 2## : 正常心跳
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 0## reply to 2 : AppendEntries开始
+2024/09/02 16:01:03 0## reply to 2 : AppendEntries结束
+2024/09/02 16:01:03 1## reply to 2 : AppendEntries开始
+2024/09/02 16:01:03 1## reply to 2 : AppendEntries结束
+2024/09/02 16:01:03 2## : 正常心跳
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 2## send to 1 : RequestVote结束
+2024/09/02 16:01:03 0## reply to 2 : AppendEntries开始
+2024/09/02 16:01:03 1## reply to 2 : AppendEntries开始
+2024/09/02 16:01:03 1## reply to 2 : AppendEntries结束
+2024/09/02 16:01:03 0## reply to 2 : AppendEntries结束
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 2## : 正常心跳
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 0## reply to 2 : AppendEntries开始
+2024/09/02 16:01:03 1## reply to 2 : AppendEntries开始
+2024/09/02 16:01:03 1## reply to 2 : AppendEntries结束
+2024/09/02 16:01:03 0## reply to 2 : AppendEntries结束
+2024/09/02 16:01:03 2## : 正常心跳
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 0## send to 1 : RequestVote结束
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 1## reply to 2 : AppendEntries开始
+2024/09/02 16:01:03 1## reply to 2 : AppendEntries结束
+2024/09/02 16:01:03 0## reply to 2 : AppendEntries开始
+2024/09/02 16:01:03 0## reply to 2 : AppendEntries结束
+2024/09/02 16:01:03 2## : 正常心跳
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 2## send to 1 : RequestVote结束
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 1## reply to 2 : AppendEntries开始
+2024/09/02 16:01:03 1## reply to 2 : AppendEntries结束
+2024/09/02 16:01:03 0## reply to 2 : AppendEntries开始
+2024/09/02 16:01:03 0## reply to 2 : AppendEntries结束
+2024/09/02 16:01:03 2## : 正常心跳
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 0## reply to 2 : AppendEntries开始
+2024/09/02 16:01:03 0## reply to 2 : AppendEntries结束
+2024/09/02 16:01:03 1## reply to 2 : AppendEntries开始
+2024/09/02 16:01:03 2## : 正常心跳
+2024/09/02 16:01:03 1## reply to 2 : AppendEntries结束
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:03 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:03 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:04 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:04 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:04 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:04 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:04 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:04 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:04 1## reply to 2 : AppendEntries开始
+2024/09/02 16:01:04 1## reply to 2 : AppendEntries结束
+2024/09/02 16:01:04 0## reply to 2 : AppendEntries开始
+2024/09/02 16:01:04 0## reply to 2 : AppendEntries结束
+2024/09/02 16:01:04 2## : 正常心跳
+2024/09/02 16:01:04 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:04 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:04 2## send to 1 : RequestVote结束
+2024/09/02 16:01:04 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:04 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:04 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:04 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:04 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:04 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:04 0## send to 1 : RequestVote结束
+2024/09/02 16:01:04 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:04 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:04 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:04 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:04 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:04 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:04 0## reply to 2 : AppendEntries开始
+2024/09/02 16:01:04 0## reply to 2 : AppendEntries结束
+2024/09/02 16:01:04 2## : 正常心跳
+2024/09/02 16:01:04 1## reply to 2 : AppendEntries开始
+2024/09/02 16:01:04 1## reply to 2 : AppendEntries结束
+2024/09/02 16:01:04 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:04 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:04 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:04 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:04 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:04 cmd = 105, cmd1 = 104, nd = 2, index = 3
+2024/09/02 16:01:04 2##--Term=41 : sendAppendEntries开始
+2024/09/02 16:01:04 2## send to 0--Term=41 : sendAppend开始
+2024/09/02 16:01:04 2## send to 1--Term=41 : sendAppend开始
+2024/09/02 16:01:04 2##--Term=41 : sendAppendEntries结束
+2024/09/02 16:01:04 每个server提交的数目：[3 2 3]
+2024/09/02 16:01:04 cmd = 105, cmd1 = <nil>, nd = 0, index = 4
+2024/09/02 16:01:04 0## reply to 2 : AppendEntries开始
+2024/09/02 16:01:04 0## reply to 2 : AppendEntries结束
+2024/09/02 16:01:04 1## reply to 2 : AppendEntries开始
+2024/09/02 16:01:04 2## : nextIndex=[5 3 3], matchIndex=[4 0 0], commitIndex=3
+2024/09/02 16:01:04 2## send to 0--Term=41 : sendAppend结束
+2024/09/02 16:01:04 1## : rf.lastApplied=2, rf.commitIndex=3, len(log)=5
+2024/09/02 16:01:04 1## reply to 2 : AppendEntries结束
+2024/09/02 16:01:04 2## : rf.lastApplied=3, rf.commitIndex=4, len(log)=5
+2024/09/02 16:01:04 2## : nextIndex=[5 5 3], matchIndex=[4 4 0], commitIndex=4
+2024/09/02 16:01:04 2## send to 1--Term=41 : sendAppend结束
+2024/09/02 16:01:04 每个server提交的数目：[3 3 4]
+2024/09/02 16:01:04 cmd = 105, cmd1 = 105, nd = 1, index = 4
+2024/09/02 16:01:04 每个server提交的数目：[3 3 4]
+2024/09/02 16:01:04 cmd = 105, cmd1 = 105, nd = 1, index = 4
+2024/09/02 16:01:04 每个server提交的数目：[3 3 4]
+2024/09/02 16:01:04 cmd = 105, cmd1 = 105, nd = 1, index = 4
+2024/09/02 16:01:04 每个server提交的数目：[3 3 4]
+2024/09/02 16:01:04 cmd = 105, cmd1 = 105, nd = 1, index = 4
+2024/09/02 16:01:04 每个server提交的数目：[3 3 4]
+2024/09/02 16:01:04 cmd = 105, cmd1 = 105, nd = 1, index = 4
+2024/09/02 16:01:04 每个server提交的数目：[3 3 4]
+2024/09/02 16:01:04 cmd = 105, cmd1 = 105, nd = 1, index = 4
+2024/09/02 16:01:04 每个server提交的数目：[3 3 4]
+2024/09/02 16:01:04 cmd = 105, cmd1 = 105, nd = 1, index = 4
+2024/09/02 16:01:04 0## reply to 2 : AppendEntries开始
+2024/09/02 16:01:04 0## reply to 2 : AppendEntries结束
+2024/09/02 16:01:04 2## : 正常心跳
+2024/09/02 16:01:04 1## reply to 2 : AppendEntries开始
+2024/09/02 16:01:04 0## : rf.lastApplied=3, rf.commitIndex=4, len(log)=5
+2024/09/02 16:01:04 1## reply to 2 : AppendEntries结束
+2024/09/02 16:01:04 1## : rf.lastApplied=3, rf.commitIndex=4, len(log)=5
+2024/09/02 16:01:04 2## : 正常心跳
+2024/09/02 16:01:04 每个server提交的数目：[4 4 4]
+2024/09/02 16:01:04 cmd = 105, cmd1 = 105, nd = 3, index = 4
+  ... Passed --  13.6  3  366   65920    4
+PASS
+ok  	6.824/raft	13.669s
